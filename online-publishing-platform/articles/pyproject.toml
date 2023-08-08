@@ -1,0 +1,252 @@
+[build-system]
+
+# Once this is present, a PEP 517 frontend like pip can build and install the project from source
+# without the need for Poetry or any of its dependencies.
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core"]
+
+# -------------------------------------------------------------------------------------------------
+
+[tool.poetry]
+
+# The authors of the package.
+authors = ["Denis Borisov <denis.borisov@hotmail.com>"]
+
+# A short description of the package.
+description = "Articles Microservice"
+
+# An URL to the documentation of the project.
+documentation = "https://github.com/denisborisov/articles/docs"
+
+# A list of keywords that the package is related to.
+keywords = ["artms", "articles"]
+
+# The license of the package.
+license = "Proprietary"
+
+# The name of the package.
+name = "articles"
+
+# A path, or list of paths corresponding to the README file(s) of the package.
+readme = [
+  "README.md",
+  "docs/api.md"
+]
+
+# An URL to the repository of the project. 
+repository = "https://github.com/denisborisov/articles"
+
+# The version of the package.
+version = "0.1.0"
+
+# -------------------------------------------------------------------------------------------------
+
+[tool.poetry.dependencies]
+
+alembic = "^1.10.3"
+asyncpg = "^0.27.0"
+dependency-injector = "^4.41.0"
+fastapi = "^0.100.0"
+fastapi-async-sqlalchemy = "^0.4.1"
+httpx = "^0.24.1"
+pydantic = "^2.1.0"
+pydantic-settings = "^2.0.2"
+python = "^3.11"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.11"}
+uvicorn = "^0.22.0"
+
+# -------------------------------------------------------------------------------------------------
+
+[tool.poetry.group.dev.dependencies]
+
+black = "*"
+docformatter = "*"
+isort = "*"
+mypy = "*"
+pre-commit = "*"
+ruff = "*"
+
+# -------------------------------------------------------------------------------------------------
+
+[tool.poetry.group.test.dependencies]
+
+aiosqlite = "*"
+asgi_lifespan = "*"
+pylint = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-xdist = "*"
+pytest-asyncio = "*"
+respx = "*"
+
+# -------------------------------------------------------------------------------------------------
+
+[tool.black]
+
+# A regular expression that matches files and directories
+# that should be excluded on recursive searches.
+exclude = '''
+(
+  /(
+    | \.git
+    | \.mypy_cache
+    | \.venv
+  )/
+)
+'''
+
+# A regular expression that matches files and directories
+# that should be included on recursive searches.
+include = '\.pyi?$'
+
+# How many characters per line to allow.
+line-length = 99
+
+# Python versions that should be supported by Black’s output.
+target-version = ["py311"]
+
+# -------------------------------------------------------------------------------------------------
+
+[tool.coverage.run]
+
+# Stores relative file paths in the data file.
+relative_files = true
+
+# Limit coverage measurement to code in the directory,
+# and also find files that weren’t executed at all.
+source = ['src']
+
+# -------------------------------------------------------------------------------------------------
+
+[tool.coverage.report]
+
+# When running a summary report, show missing lines.
+show_missing = true
+
+# -------------------------------------------------------------------------------------------------
+
+[tool.coverage.xml]
+
+# Where to write the XML report.
+output = "reports/coverage.xml"
+
+# -------------------------------------------------------------------------------------------------
+
+[tool.docformatter]
+
+# In recursive mode, exclude directories and files by names.
+exclude = ['__pycache__']
+
+# Files to format.
+files = ['src']
+
+# Make changes to files instead of printing diffs.
+in-place = true
+
+# Drill down directories recursively.
+recursive = true
+
+# -------------------------------------------------------------------------------------------------
+
+[tool.isort]
+
+# Maximum length (columns) for a line of program code.
+line_length = 99
+
+# Number of blank lines to separate imports from following statements.
+lines_after_imports = 2
+
+# Multi line output mode 3 - Vertical Hanging Indent
+multi_line_output = 3
+
+# Treat project as a git repository and ignore files listed in .gitignore.
+skip_gitignore = true
+
+# Use parentheses for line continuation on length limit instead of backslashes.
+use_parentheses = true
+
+# -------------------------------------------------------------------------------------------------
+
+[tool.mypy]
+
+# Disallows defining functions without type annotations or with incomplete type annotations.
+disallow_untyped_defs = true
+
+# A regular expression that matches file names, directory names and paths
+# which mypy should ignore while recursively discovering files to check.
+exclude = "alembic"
+
+# Specifies the Python version used to parse and check the target program.
+python_version = "3.11"
+
+# Shows a warning when returning a value with type Any
+# from a function declared with a non-Any return type.
+warn_return_any = true
+
+# -------------------------------------------------------------------------------------------------
+
+[tool.pylint]
+
+# A comma-separated list of package or module names from where C extensions may be loaded.
+extension-pkg-allow-list = ["pydantic", "asyncpg"]
+
+# Use multiple processes to speed up Pylint.
+# Specifying 0 will auto-detect the number of processors available to use,
+# and will cap the count on Windows to avoid hangs.
+jobs = 0
+
+# Maximum number of characters on a single line.
+max-line-length = 99
+
+# -------------------------------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+
+# Additional options.
+addopts = """
+--capture=no
+--cov
+--cov-report=term-missing
+--cov-report=xml
+--exitfirst
+--junitxml=reports/junit.xml
+--verbose
+--verbose
+"""
+
+# pytest-asyncio mode.
+# When the mode is auto, all discovered async tests are considered asyncio-driven
+# even if they have no @pytest.mark.asyncio marker.
+asyncio_mode = "auto"
+
+# -------------------------------------------------------------------------------------------------
+
+[tool.ruff]
+
+# Additional callable functions to consider "immutable" when evaluating,
+# e.g., no-mutable-default-argument checks (B006).
+extend-immutable-calls = ["fastapi.Depends"]
+
+# A list of rule codes or prefixes to ignore.
+ignore = [
+  "ANN101",  # Checks that instance method self arguments have type annotations.
+  "D101",  # Checks for undocumented public class definitions.
+  "D102",  # Checks for undocumented public method definitions.
+  "D103",  # Checks for undocumented public function definitions.
+  "D107",  # Checks for public init method definitions that are missing docstrings.
+  "EM",  # Check stuff related to flake8.
+  "FBT",  # Check stuff related to flake8-boolean-trap.
+  "G004",  # Checks for uses of f-strings to format logging messages.
+  "I",  # Check stuff related to isort.
+  "S101",  # Checks for uses of the assert keyword.
+  "TRY003"  # Checks for long exception messages that are not defined in the exception class itself.
+]
+
+# The line length to use when enforcing long-lines violations (like E501).
+line-length = 99
+
+# A list of rule codes or prefixes to enable.
+select = "ALL"
+
+# The source code paths to consider, e.g., when resolving first- vs. third-party imports.
+src = ["src"]
