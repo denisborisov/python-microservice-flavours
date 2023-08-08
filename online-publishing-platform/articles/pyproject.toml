@@ -16,7 +16,7 @@ authors = ["Denis Borisov <denis.borisov@hotmail.com>"]
 description = "Articles MicroService"
 
 # An URL to the documentation of the project.
-documentation = "https://github.com/denisborisov/online-publishing-platform/articles/docs"
+documentation = "https://github.com/denisborisov/mvp-workshop/tree/main/online-publishing-platform/articles/docs"
 
 # A list of keywords that the package is related to.
 keywords = ["artms", "articles"]
@@ -28,13 +28,10 @@ license = "Proprietary"
 name = "articles"
 
 # A path, or list of paths corresponding to the README file(s) of the package.
-readme = [
-  "README.md",
-  "docs/api.md"
-]
+readme = ["README.md", "docs/api.md"]
 
 # An URL to the repository of the project. 
-repository = "https://github.com/denisborisov/online-publishing-platform/articles"
+repository = "https://github.com/denisborisov/mvp-workshop/tree/main/online-publishing-platform/articles"
 
 # The version of the package.
 version = "0.1.0"
@@ -52,7 +49,7 @@ httpx = "^0.24.1"
 pydantic = "^2.1.0"
 pydantic-settings = "^2.0.2"
 python = "^3.11"
-sqlalchemy = {extras = ["asyncio"], version = "^2.0.11"}
+sqlalchemy = { extras = ["asyncio"], version = "^2.0.11" }
 uvicorn = "^0.22.0"
 
 # -------------------------------------------------------------------------------------------------
@@ -229,17 +226,17 @@ extend-immutable-calls = ["fastapi.Depends"]
 
 # A list of rule codes or prefixes to ignore.
 ignore = [
-  "ANN101",  # Checks that instance method self arguments have type annotations.
-  "D101",  # Checks for undocumented public class definitions.
-  "D102",  # Checks for undocumented public method definitions.
-  "D103",  # Checks for undocumented public function definitions.
-  "D107",  # Checks for public init method definitions that are missing docstrings.
-  "EM",  # Check stuff related to flake8.
-  "FBT",  # Check stuff related to flake8-boolean-trap.
-  "G004",  # Checks for uses of f-strings to format logging messages.
-  "I",  # Check stuff related to isort.
-  "S101",  # Checks for uses of the assert keyword.
-  "TRY003"  # Checks for long exception messages that are not defined in the exception class itself.
+  "ANN101", # Checks that instance method self arguments have type annotations.
+  "D101",   # Checks for undocumented public class definitions.
+  "D102",   # Checks for undocumented public method definitions.
+  "D103",   # Checks for undocumented public function definitions.
+  "D107",   # Checks for public init method definitions that are missing docstrings.
+  "EM",     # Check stuff related to flake8.
+  "FBT",    # Check stuff related to flake8-boolean-trap.
+  "G004",   # Checks for uses of f-strings to format logging messages.
+  "I",      # Check stuff related to isort.
+  "S101",   # Checks for uses of the assert keyword.
+  "TRY003", # Checks for long exception messages that are not defined in the exception class itself.
 ]
 
 # The line length to use when enforcing long-lines violations (like E501).
