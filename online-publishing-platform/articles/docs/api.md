@@ -1,4 +1,4 @@
-# Development of Articles MicroService API
+# Development of Articles Microservice API
 
 ## Goals
 

@@ -13,7 +13,7 @@ requires = ["poetry-core"]
 authors = ["Denis Borisov <denis.borisov@hotmail.com>"]
 
 # A short description of the package.
-description = "Articles MicroService"
+description = "Articles Microservice"
 
 # An URL to the documentation of the project.
 documentation = "https://github.com/denisborisov/mvp-workshop/tree/main/online-publishing-platform/articles/docs"
@@ -220,22 +220,25 @@ asyncio_mode = "auto"
 
 [tool.ruff]
 
-# Additional callable functions to consider "immutable" when evaluating,
-# e.g., no-mutable-default-argument checks (B006).
-extend-immutable-calls = ["fastapi.Depends"]
-
 # A list of rule codes or prefixes to ignore.
 ignore = [
   "ANN101", # Checks that instance method self arguments have type annotations.
+  "ANN401", # Checks that function arguments are annotated with a more specific type than Any.
+  "B009",   # Checks for uses of getattr that take a constant attribute value as an argument.
+  "B010",   # Checks for uses of setattr that take a constant attribute value as an argument.
   "D101",   # Checks for undocumented public class definitions.
   "D102",   # Checks for undocumented public method definitions.
   "D103",   # Checks for undocumented public function definitions.
+  "D105",   # Checks for undocumented magic method definitions.
+  "D106",   # Checks for undocumented public class definitions, for nested classes.
   "D107",   # Checks for public init method definitions that are missing docstrings.
   "EM",     # Check stuff related to flake8.
   "FBT",    # Check stuff related to flake8-boolean-trap.
   "G004",   # Checks for uses of f-strings to format logging messages.
   "I",      # Check stuff related to isort.
+  "RUF001", # Checks for ambiguous unicode characters in strings.
   "S101",   # Checks for uses of the assert keyword.
+  "TID252", # Checks for relative imports.
   "TRY003", # Checks for long exception messages that are not defined in the exception class itself.
 ]
 
@@ -243,7 +246,15 @@ ignore = [
 line-length = 99
 
 # A list of rule codes or prefixes to enable.
-select = "ALL"
+select = ["ALL"]
 
 # The source code paths to consider, e.g., when resolving first- vs. third-party imports.
 src = ["src"]
+
+# -------------------------------------------------------------------------------------------------
+
+[tool.ruff.flake8-bugbear]
+
+# Additional callable functions to consider "immutable" when evaluating,
+# e.g., no-mutable-default-argument checks (B006).
+extend-immutable-calls = ["fastapi.Depends"]

@@ -1,0 +1,94 @@
+"""Unit of work."""
+
+import abc
+import types
+import typing
+import typing_extensions
+
+import dependency_injector.wiring
+import sqlalchemy.ext.asyncio
+
+from .. import adapters
+from ..containers.http_client import HttpClientContainer
+from ..containers.session_factory import SessionFactoryContainer
+from ..services.http_client import AbstractHttpClient
+
+
+class AbstractUnitOfWork(typing.Protocol):
+    article_repository: adapters.articles_repository.AbstractArticleRepository
+    http_client: AbstractHttpClient
+
+    async def __aenter__(self) -> typing_extensions.Self:
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: types.TracebackType | None,
+    ) -> bool | None:
+        await self.rollback()
+        return None
+
+    async def commit(self) -> None:
+        await self._commit()
+
+    async def rollback(self) -> None:
+        await self._rollback()
+
+    def collect_new_events(self) -> typing.Generator:
+        repositories: list[
+            adapters.articles_repository.AbstractArticleRepository
+        ] = [self.article_repository]
+
+        for one_repository in repositories:
+            for entity in one_repository.seen:
+                while entity.events:
+                    yield entity.events.pop(0)
+
+    @abc.abstractmethod
+    async def _commit(self) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def _rollback(self) -> None:
+        raise NotImplementedError
+
+
+class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
+    @dependency_injector.wiring.inject
+    def __init__(
+        self,
+        http_client: AbstractHttpClient = dependency_injector.wiring.Provide[
+            HttpClientContainer.http_client
+        ],
+        session_factory: sqlalchemy.ext.asyncio.async_sessionmaker = \
+            dependency_injector.wiring.Provide[SessionFactoryContainer.session_factory],
+    ) -> None:
+        self.http_client = http_client
+        self._session_factory = session_factory
+
+    async def __aenter__(self) -> typing_extensions.Self:
+        await super().__aenter__()
+        self._session: sqlalchemy.ext.asyncio.AsyncSession = self._session_factory()
+        self.article_repository = adapters.articles_repository.SqlAlchemyArticleRepository(
+            self._session,
+        )
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: types.TracebackType | None,
+    ) -> bool | None:
+        await super().__aexit__(exc_type, exc_val, exc_tb)
+        await self._session.close()
+        return None
+
+    async def _commit(self) -> None:
+        await self._session.commit()
+
+    async def _rollback(self) -> None:
+        self._session.expunge_all()
+        await self._session.rollback()

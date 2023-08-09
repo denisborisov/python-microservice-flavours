@@ -1,2 +1,6 @@
+# directories
 .venv
+reports
+
+# files
 poetry.lock

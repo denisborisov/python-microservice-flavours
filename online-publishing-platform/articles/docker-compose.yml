@@ -1,18 +1,16 @@
+---
 version: '3.8'
 
 services:
   database:
     image: postgres:latest
-    user: root
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_NAME: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: artms
+      POSTGRES_PASSWORD: artms
     ports:
       - 5432:5432
     volumes:
-      - ./database:/docker-entrypoint-initdb.d
-      - db-data:/var/lib/postgresql/data
+      - artms-data:/var/lib/postgresql/data
 
 volumes:
-  db-data:
+  artms-data:
