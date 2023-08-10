@@ -31,10 +31,10 @@ class FakeHttpClient(AbstractHttpClient):
     ) -> bool | None:
         return None
 
-    async def post(self) -> typing.Any:
+    async def post(self, url: str, headers: dict, params: dict) -> typing.Any:  # noqa: ARG002
         return self.Response({})
 
-    async def get(self) -> typing.Any:
+    async def get(self, url: str) -> typing.Any:  # noqa: ARG002
         if self.raises_exception_once:
             self.raises_exception_once = False
             raise self.FakeHttpClientError

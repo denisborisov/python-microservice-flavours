@@ -20,7 +20,7 @@ down:
 
 test-app:
 	poetry run pytest --cov-fail-under=${PYTEST_COVER_PERCENT} \
-	                  tests/
+	                  tests/unit/
 
 cleanup:
 	podman rm $(podman ps -aq)

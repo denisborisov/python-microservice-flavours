@@ -12,7 +12,7 @@ app = fastapi.FastAPI(
     redoc_url="/api/redoc",
     title="Articles Microservice",
     description="This is an article microservice.",
-    version="1.0.0",
+    version="0.1.0",
     contact={
         "name": "Denis Borisov",
         "email": "denis.borisov@hotmail.com",
