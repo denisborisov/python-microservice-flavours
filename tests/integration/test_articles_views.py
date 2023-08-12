@@ -12,6 +12,29 @@ if typing.TYPE_CHECKING:
 
 
 class TestArticlesViews:
+    async def test_fetch_article_by_id_view(self, sqlite_bus: MessageBus) -> None:
+        await handle(
+            sqlite_bus, CreateArticle(
+                "First Title", "First Preview", "First Body", created_by=1,
+            ),
+        )
+        article_id = await handle(
+            sqlite_bus, CreateArticle(
+                "Second Title", "Second Preview", "Second Body", created_by=2,
+            ),
+        )
+
+        fetched_article: Article | None = await articles.fetch_article_by_id(
+            article_id,
+            sqlite_bus.uow,
+        )
+
+        assert fetched_article
+        assert fetched_article.title == "Second Title"
+        assert fetched_article.preview == "Second Preview"
+        assert fetched_article.body == "Second Body"
+        assert fetched_article.created_by == 2  # noqa: PLR2004
+
     async def test_fetch_all_articles_view(self, sqlite_bus: MessageBus) -> None:
         await handle(
             sqlite_bus, CreateArticle(
@@ -35,23 +58,3 @@ class TestArticlesViews:
         assert fetched_articles[1].preview == "Second Preview"
         assert fetched_articles[1].body == "Second Body"
         assert fetched_articles[1].created_by == 2  # noqa: PLR2004
-
-    async def test_fetch_article_by_id_view(self, sqlite_bus: MessageBus) -> None:
-        await handle(
-            sqlite_bus, CreateArticle(
-                "First Title", "First Preview", "First Body", created_by=1,
-            ),
-        )
-        await handle(
-            sqlite_bus, CreateArticle(
-                "Second Title", "Second Preview", "Second Body", created_by=2,
-            ),
-        )
-
-        fetched_article: Article | None = await articles.fetch_article_by_id(2, sqlite_bus.uow)
-
-        assert fetched_article
-        assert fetched_article.title == "Second Title"
-        assert fetched_article.preview == "Second Preview"
-        assert fetched_article.body == "Second Body"
-        assert fetched_article.created_by == 2  # noqa: PLR2004

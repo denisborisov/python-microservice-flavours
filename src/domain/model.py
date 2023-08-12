@@ -1,6 +1,7 @@
 """Domain model."""
 
 import typing
+import uuid
 
 if typing.TYPE_CHECKING:
     from . import events
@@ -8,7 +9,7 @@ if typing.TYPE_CHECKING:
 
 class Article:
     def __init__(self, title: str, preview: str, body: str, created_by: int) -> None:
-        self.article_id: int
+        self.article_id = uuid.uuid4()
         self.title = title
         self.preview = preview
         self.body = body
@@ -16,10 +17,9 @@ class Article:
         self.events: list[events.Event] = []
 
     def __hash__(self) -> int:
-        return hash((self.title, self.preview, self.body, self.created_by))
+        return hash(self.article_id)
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, self.__class__):
-            return (self.title, self.preview, self.body, self.created_by) == \
-                       (other.title, other.preview, other.body, other.created_by)
+            return self.article_id == other.article_id
         raise NotImplementedError

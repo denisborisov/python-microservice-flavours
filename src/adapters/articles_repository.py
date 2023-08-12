@@ -1,6 +1,7 @@
 """Articles repository."""
 
 import typing
+import uuid
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,7 +16,7 @@ class AbstractArticleRepository(typing.Protocol):
         self._create_article(article)
         self.seen.add(article)
 
-    async def retrieve_article_by_id(self, article_id: int) -> Article | None:
+    async def retrieve_article_by_id(self, article_id: uuid.UUID) -> Article | None:
         article = await self._retrieve_article_by_id(article_id)
         if article:
             self.seen.add(article)
@@ -30,7 +31,7 @@ class AbstractArticleRepository(typing.Protocol):
     def _create_article(self, article: Article) -> None:
         raise NotImplementedError
 
-    async def _retrieve_article_by_id(self, article_id: int) -> Article | None:
+    async def _retrieve_article_by_id(self, article_id: uuid.UUID) -> Article | None:
         raise NotImplementedError
 
     async def _retrieve_all_articles(self) -> list[Article]:
@@ -45,7 +46,7 @@ class SqlAlchemyArticleRepository(AbstractArticleRepository):
     def _create_article(self, article: Article) -> None:
         self.session.add(article)
 
-    async def _retrieve_article_by_id(self, article_id: int) -> Article | None:
+    async def _retrieve_article_by_id(self, article_id: uuid.UUID) -> Article | None:
         result = await self.session.scalars(
             select(Article).where(Article.article_id == article_id),  # type: ignore[arg-type]
         )

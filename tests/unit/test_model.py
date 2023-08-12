@@ -1,6 +1,7 @@
 """Unit tests related to model."""
 
 import pytest
+import uuid
 
 from src.domain import model
 
@@ -30,46 +31,33 @@ class TestArticles:
 
     @pytest.mark.parametrize(
         (
-            "first_title", "first_preview", "first_body", "first_created_by",
-            "second_title", "second_preview", "second_body", "second_created_by",
+            "a_article_id", "a_title", "a_preview", "a_body", "a_created_by",
+            "b_article_id", "b_title", "b_preview", "b_body", "b_created_by",
             "equality", "cardinality",
         ),
         [
             (
-                "First Title", "First Preview", "First Body", 1,
-                "First Title", "First Preview", "First Body", 1,
+                "24dcf370-...-644867b63186", "First Title", "First Preview", "First Body", 1,
+                "24dcf370-...-644867b63186", "Second Title", "Second Preview", "Second Body", 2,
                 True, 1,
             ),
             (
-                "First Title", "First Preview", "First Body", 1,
-                "Second Title", "First Preview", "First Body", 1,
-                False, 2,
-            ),
-            (
-                "First Title", "First Preview", "First Body", 1,
-                "First Title", "Second Preview", "First Body", 1,
-                False, 2,
-            ),
-            (
-                "First Title", "First Preview", "First Body", 1,
-                "First Title", "First Preview", "Second Body", 1,
-                False, 2,
-            ),
-            (
-                "First Title", "First Preview", "First Body", 1,
-                "First Title", "First Preview", "First Body", 2,
+                "24dcf370-...-644867b63186", "First Title", "First Preview", "First Body", 1,
+                "03d2ca1e-...-1c8d75e074da", "First Title", "First Preview", "First Body", 1,
                 False, 2,
             ),
         ],
     )
-    def test_article_identity_is_based_on_title_preview_body_created_by(  # noqa: PLR0913
+    def test_article_identity_is_based_on_article_id(  # noqa: PLR0913
         self,
-        first_title: str, first_preview: str, first_body: str, first_created_by: int,
-        second_title: str, second_preview: str, second_body: str, second_created_by: int,
+        a_article_id: uuid.UUID, a_title: str, a_preview: str, a_body: str, a_created_by: int,
+        b_article_id: uuid.UUID, b_title: str, b_preview: str, b_body: str, b_created_by: int,
         equality: bool, cardinality: int,
     ) -> None:
-        article_1 = model.Article(first_title, first_preview, first_body, first_created_by)
-        article_2 = model.Article(second_title, second_preview, second_body, second_created_by)
+        article_1 = model.Article(a_title, a_preview, a_body, a_created_by)
+        article_1.article_id = a_article_id
+        article_2 = model.Article(b_title, b_preview, b_body, b_created_by)
+        article_2.article_id = b_article_id
 
         assert (article_1 == article_2) is equality
         assert len({article_1, article_2}) == cardinality

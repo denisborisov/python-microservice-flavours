@@ -5,6 +5,8 @@ import time
 
 from . import conftest
 from src import routines
+from src.domain.commands import Command
+from src.domain.exceptions import CommandHandlingError
 from src.services.message_bus import MessageBus
 
 
@@ -20,6 +22,16 @@ class TestMessageBus:
 
         assert len(articles) == 1
         assert fake_bus._event_queue.qsize() == 2  # noqa: SLF001, PLR2004
+
+    async def test_cannot_handle_nonexistent_command(self, fake_bus: MessageBus) -> None:
+        class NonExistentCommand(Command):
+            pass
+
+        command = NonExistentCommand()
+        with pytest.raises(CommandHandlingError) as exc_info:
+            await fake_bus.handle(command)
+
+        assert exc_info.value.args[0] == f"Cannot find a command handler for {type(command)}"
 
     async def test_can_handle_events(
         self,

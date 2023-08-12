@@ -1,5 +1,7 @@
 """Integration tests related to article repository."""
 
+import uuid
+
 import sqlalchemy.ext.asyncio
 
 from src.adapters.articles_repository import SqlAlchemyArticleRepository
@@ -29,7 +31,7 @@ class TestRetrieveArticleById:
         async with sqlite_session_factory() as session:
             repo = SqlAlchemyArticleRepository(session)
             repo.create_article(article)
-            retrieved_article = await repo.retrieve_article_by_id(1)
+            retrieved_article = await repo.retrieve_article_by_id(article.article_id)
 
             assert retrieved_article == article
             assert retrieved_article in repo.seen
@@ -40,7 +42,7 @@ class TestRetrieveArticleById:
     ) -> None:
         async with sqlite_session_factory() as session:
             repo = SqlAlchemyArticleRepository(session)
-            retrieved_article = await repo.retrieve_article_by_id(1)
+            retrieved_article = await repo.retrieve_article_by_id(uuid.uuid4())
 
             assert retrieved_article is None
             assert retrieved_article not in repo.seen

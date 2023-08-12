@@ -24,7 +24,7 @@ class ArticleCreate(BaseModel):
 
 
 class Article(ArticleCreate):
-    article_id: int
+    article_id: str
 
     class Config:
         json_schema_extra: typing.ClassVar[dict] = {

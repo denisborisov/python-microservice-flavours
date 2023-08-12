@@ -3,6 +3,7 @@
 import asyncio
 from dataclasses import dataclass
 import pytest
+import uuid
 
 from ..conftest import FakeHttpClient
 from src.adapters.articles_repository import AbstractArticleRepository
@@ -19,11 +20,10 @@ class FakeArticleRepository(AbstractArticleRepository):
         self.seen: set[model.Article] = set()
 
     def _create_article(self, article: model.Article) -> None:
-        article.article_id = 1 + max(article.article_id for article in self.articles) \
-                             if self.articles else 1
+        article.article_id = uuid.uuid4()
         self.articles.add(article)
 
-    async def _retrieve_article_by_id(self, article_id: int) -> model.Article:
+    async def _retrieve_article_by_id(self, article_id: uuid.UUID) -> model.Article:
         filtered_articles = [
             one_article for one_article in self.articles if one_article.article_id == article_id
         ]

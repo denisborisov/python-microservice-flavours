@@ -9,6 +9,7 @@ import dependency_injector.wiring
 from ..containers.unit_of_work import SqlAlchemyUnitOfWorkContainer
 from ..domain.commands import Command
 from ..domain.events import Event
+from ..domain.exceptions import CommandHandlingError
 from ..services import handlers
 from ..services.unit_of_work import AbstractUnitOfWork
 
@@ -55,7 +56,13 @@ class MessageBus:
         return await self._handle_command(command)
 
     async def _handle_command(self, command: Command) -> typing.Any:
-        handler = self._command_handlers[type(command)]
+        try:
+            handler = self._command_handlers[type(command)]
+        except KeyError:
+            raise CommandHandlingError(
+                f"Cannot find a command handler for {type(command)}",
+            ) from KeyError
+
         result = await handler(command, self.uow)
         for event in self.uow.collect_new_events():
             await self._event_queue.put(event)

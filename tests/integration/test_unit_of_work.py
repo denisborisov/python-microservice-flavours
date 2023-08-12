@@ -2,6 +2,7 @@
 
 import contextlib
 import typing
+import uuid
 
 from sqlalchemy import text
 import sqlalchemy.ext.asyncio
@@ -21,10 +22,16 @@ async def insert_article(
 ) -> None:
     await session.execute(
         text(
-            "INSERT INTO articles (title, preview, body, created_by) "
-            "VALUES (:title, :preview, :body, :created_by)",
+            "INSERT INTO articles (article_id, title, preview, body, created_by) "
+            "VALUES (:article_id, :title, :preview, :body, :created_by)",
         ),
-        {"title": title, "preview": preview, "body": body, "created_by": created_by},
+        {
+            "article_id": str(uuid.uuid4()),
+            "title": title,
+            "preview": preview,
+            "body": body,
+            "created_by": created_by,
+        },
     )
 
 
