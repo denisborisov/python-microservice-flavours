@@ -1,4 +1,5 @@
 # directories
+.mypy_cache
 .venv
 reports
 

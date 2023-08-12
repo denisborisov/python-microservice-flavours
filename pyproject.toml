@@ -41,11 +41,11 @@ version = "0.1.0"
 [tool.poetry.dependencies]
 
 alembic = "^1.10.3"
-asyncpg = "^0.27.0"
 dependency-injector = "^4.41.0"
 fastapi = "^0.100.0"
 fastapi-async-sqlalchemy = "^0.4.1"
 httpx = "^0.24.1"
+psycopg = {extras = ["binary"], version = "^3.1.10"}  # because asyncpg cannot resolve multihost connection strings
 pydantic = "^2.1.0"
 pydantic-settings = "^2.0.2"
 python = "^3.11"
