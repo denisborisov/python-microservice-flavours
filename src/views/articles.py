@@ -1,4 +1,4 @@
-"""Views related to categories."""
+"""Views related to articles."""
 
 from ..domain.model import Article
 from ..services.unit_of_work import AbstractUnitOfWork

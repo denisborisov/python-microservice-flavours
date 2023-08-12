@@ -1,4 +1,4 @@
-"""API endpoints related to categories."""
+"""API endpoints related to articles."""
 
 import dependency_injector.wiring
 import fastapi

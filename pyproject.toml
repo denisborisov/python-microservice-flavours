@@ -233,6 +233,9 @@ ignore = [
   "D106",   # Checks for undocumented public class definitions, for nested classes.
   "D107",   # Checks for public init method definitions that are missing docstrings.
   "EM",     # Check stuff related to flake8.
+  "FA102",  # Checks for uses of PEP 585- and PEP 604-style type annotations in Python modules that
+            # lack the required `from __future__ import annotations` import for compatibility
+            # with older Python versions.
   "FBT",    # Check stuff related to flake8-boolean-trap.
   "G004",   # Checks for uses of f-strings to format logging messages.
   "I",      # Check stuff related to isort.

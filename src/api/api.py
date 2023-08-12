@@ -7,4 +7,4 @@ from . import endpoints
 
 api_router = APIRouter()
 
-api_router.include_router(endpoints.articles.router, prefix="/categories", tags=["categories"])
+api_router.include_router(endpoints.articles.router, prefix="/articles", tags=["articles"])

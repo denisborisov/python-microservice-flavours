@@ -16,9 +16,9 @@ class TestMessageBus:
                 conftest.SendTwoEmails("eggs"),
             ),
         )
-        categories = await fake_bus.uow.article_repository.retrieve_all_articles()
+        articles = await fake_bus.uow.article_repository.retrieve_all_articles()
 
-        assert len(categories) == 1
+        assert len(articles) == 1
         assert fake_bus._event_queue.qsize() == 2  # noqa: SLF001, PLR2004
 
     async def test_can_handle_events(
