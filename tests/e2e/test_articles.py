@@ -1,9 +1,9 @@
 """E2E tests related to articles."""
 
+import http
 import pytest
 import uuid
 
-from fastapi import status
 from httpx import AsyncClient
 
 
@@ -12,7 +12,7 @@ class TestCreateArticle:
         article = {"title": "Title", "preview": "Preview", "body": "Body", "created_by": 1}
         response = await async_client.post("/api/articles", json=article)
 
-        assert response.status_code == status.HTTP_201_CREATED
+        assert response.status_code == http.HTTPStatus.CREATED
         assert response.json()
 
     @pytest.mark.parametrize(
@@ -33,7 +33,7 @@ class TestCreateArticle:
         article = {"title": title, "preview": preview, "body": body, "created_by": created_by}
         response = await async_client.post("/api/articles", json=article)
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == http.HTTPStatus.BAD_REQUEST
         assert response.json().startswith("Failed to create article.")
 
     @pytest.mark.parametrize(
@@ -54,7 +54,7 @@ class TestCreateArticle:
         article = {"title": title, "preview": preview, "body": body, "created_by": created_by}
         response = await async_client.post("/api/articles", json=article)
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == http.HTTPStatus.BAD_REQUEST
         assert response.json().startswith("Failed to create article.")
 
     @pytest.mark.parametrize(
@@ -75,7 +75,7 @@ class TestCreateArticle:
         article = {"title": title, "preview": preview, "body": body, "created_by": created_by}
         response = await async_client.post("/api/articles", json=article)
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == http.HTTPStatus.BAD_REQUEST
         assert response.json().startswith("Failed to create article.")
 
 
@@ -101,7 +101,7 @@ class TestFetchArticleById:
 
         response = await async_client.get(f"/api/articles/{post_response.json()['article_id']}")
 
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == http.HTTPStatus.OK
         assert response.json()["title"] == article_2["title"]
         assert response.json()["preview"] == article_2["preview"]
         assert response.json()["body"] == article_2["body"]
@@ -126,7 +126,7 @@ class TestFetchArticleById:
         nonexistent_article_id = uuid.uuid4()
         response = await async_client.get(f"/api/articles/{nonexistent_article_id!s}")
 
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.status_code == http.HTTPStatus.NOT_FOUND
         assert response.json() == \
             f"Article with article_id='{nonexistent_article_id!s}' has not been found."
 
@@ -152,7 +152,7 @@ class TestFetchAllArticles:
         await async_client.post("/api/articles", json=article_2)
         response = await async_client.get("/api/articles")
 
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == http.HTTPStatus.OK
 
         assert response.json()[0]["title"] == article_1["title"]
         assert response.json()[0]["preview"] == article_1["preview"]
@@ -169,5 +169,5 @@ class TestFetchAllArticles:
         async_client: AsyncClient,
     ) -> None:
         response = await async_client.get("/api/articles")
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.status_code == http.HTTPStatus.NOT_FOUND
         assert response.json() == "There are no articles at all."

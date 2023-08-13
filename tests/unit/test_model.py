@@ -24,6 +24,7 @@ class TestArticles:
     ) -> None:
         article = model.Article(title, preview, body, created_by)
 
+        assert isinstance(article.article_id, uuid.UUID)
         assert article.title == title
         assert article.preview == preview
         assert article.body == body

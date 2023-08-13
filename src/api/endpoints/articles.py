@@ -18,7 +18,7 @@ router = fastapi.APIRouter()
 @router.post("", status_code=201, response_model=dict)
 @dependency_injector.wiring.inject
 async def create_article(
-    article: domain.schemata.ArticleCreate,
+    article: domain.schemata.ArticlePost,
     bus: MessageBus = fastapi.Depends(
         dependency_injector.wiring.Provide[MessageBusContainer.message_bus],
     ),

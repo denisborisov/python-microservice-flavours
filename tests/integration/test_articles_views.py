@@ -1,6 +1,7 @@
 """Integration tests related to article views."""
 
 import typing
+import uuid
 
 from ..conftest import handle
 from src.domain.commands import CreateArticle
@@ -30,6 +31,7 @@ class TestArticlesViews:
         )
 
         assert fetched_article
+        assert isinstance(fetched_article.article_id, uuid.UUID)
         assert fetched_article.title == "Second Title"
         assert fetched_article.preview == "Second Preview"
         assert fetched_article.body == "Second Body"
@@ -49,11 +51,13 @@ class TestArticlesViews:
 
         fetched_articles: list[Article] = await articles.fetch_all_articles(sqlite_bus.uow)
 
+        assert isinstance(fetched_articles[0].article_id, uuid.UUID)
         assert fetched_articles[0].title == "First Title"
         assert fetched_articles[0].preview == "First Preview"
         assert fetched_articles[0].body == "First Body"
         assert fetched_articles[0].created_by == 1
 
+        assert isinstance(fetched_articles[1].article_id, uuid.UUID)
         assert fetched_articles[1].title == "Second Title"
         assert fetched_articles[1].preview == "Second Preview"
         assert fetched_articles[1].body == "Second Body"

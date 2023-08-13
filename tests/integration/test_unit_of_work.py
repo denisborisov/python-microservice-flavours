@@ -48,29 +48,19 @@ class TestUnitOfWork:
                 "First Body",
                 created_by=1,
             )
-            await insert_article(
-                uow._session,  # noqa: SLF001
-                "Second Title",
-                "Second Preview",
-                "Second Body",
-                created_by=2,
-            )
             await uow.commit()
 
         async with sqlite_session_factory() as new_session:
-            articles: list[model.Article] = list(
-                await new_session.execute(text("SELECT * FROM articles")),
+            cursor_result: sqlalchemy.CursorResult = await new_session.execute(
+                text("SELECT * FROM articles"),
             )
+            article: dict = cursor_result.one()._asdict()
 
-            assert articles[0].title == "First Title"
-            assert articles[0].preview == "First Preview"
-            assert articles[0].body == "First Body"
-            assert articles[0].created_by == 1
-
-            assert articles[1].title == "Second Title"
-            assert articles[1].preview == "Second Preview"
-            assert articles[1].body == "Second Body"
-            assert articles[1].created_by == 2  # noqa: PLR2004
+            assert uuid.UUID(article["article_id"])
+            assert article["title"] == "First Title"
+            assert article["preview"] == "First Preview"
+            assert article["body"] == "First Body"
+            assert article["created_by"] == 1
 
 
     async def test_saves_changes_on_commit(

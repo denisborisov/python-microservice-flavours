@@ -12,7 +12,9 @@ class TestDependencyInjection:
     def test_containers_attached_to_app(self) -> None:
         app = FastAPI()
         attach_containers_to_app(app)
+
         containers = [attribute for attribute in app.__dict__ if attribute.endswith("_container")]
+
         assert len(containers) == 5  # noqa: PLR2004
         assert getattr(app, "database_engine_container", None)
         assert getattr(app, "http_client_container", None)
