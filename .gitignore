@@ -1,5 +1,6 @@
 # directories
 .mypy_cache
+.pytest_cache
 .venv
 reports
 
