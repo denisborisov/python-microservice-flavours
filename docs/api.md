@@ -382,7 +382,6 @@ Status Codes:
   </tbody>
 </table>
 <br />
-<br />
 
 #### 5.2. Response data of GET /api/articles
 
