@@ -130,7 +130,7 @@
       <td>retrieve all articles</td>
       <td align="center">GET</td>
       <td>/api/articles</td>
-      <td></td>
+      <td>query parameters</td>
       <td>
         <ul>
           <li>json body</li>
@@ -362,7 +362,26 @@ Status Codes:
 
 #### 5.1. Request data of GET /api/articles
 
-Nothing.
+<table>
+  <tbody>
+    <tr>
+      <th colspan="4">Query Parameters</th>
+    </tr>
+    <tr>
+      <th align="center">Name</th>
+      <th align="center">Type</th>
+      <th align="center">Required</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td>user_id</td>
+      <td align="center">int</td>
+      <td align="center">false</td>
+      <td>user id</td>
+    </tr>
+  </tbody>
+</table>
+<br />
 <br />
 
 #### 5.2. Response data of GET /api/articles

@@ -16,7 +16,7 @@ authors = ["Denis Borisov <denis.borisov@hotmail.com>"]
 description = "Articles Microservice"
 
 # An URL to the documentation of the project.
-documentation = "https://github.com/denisborisov/mvp-workshop/tree/main/online-publishing-platform/articles/docs"
+documentation = "https://github.com/denisborisov/mvp-workshop/tree/main/docs"
 
 # A list of keywords that the package is related to.
 keywords = ["artms", "articles"]
@@ -31,7 +31,7 @@ name = "articles"
 readme = ["README.md", "docs/api.md"]
 
 # An URL to the repository of the project. 
-repository = "https://github.com/denisborisov/mvp-workshop/tree/main/online-publishing-platform/articles"
+repository = "https://github.com/denisborisov/mvp-workshop/tree/main"
 
 # The version of the package.
 version = "0.1.0"
