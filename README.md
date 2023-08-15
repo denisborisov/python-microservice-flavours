@@ -1,8 +1,4 @@
-<div align="center">
-  <h1>Articles Microservice</h1>
-</div>
-
-# О проекте
+# Articles Microservice
 Articles Microservice - это микросервис, управляющий статьями пользователей.
 <br />
 <br />
