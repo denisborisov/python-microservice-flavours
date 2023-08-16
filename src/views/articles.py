@@ -11,6 +11,9 @@ async def fetch_article_by_id(article_id: uuid.UUID, uow: AbstractUnitOfWork) ->
         return await uow.article_repository.retrieve_article_by_id(article_id)
 
 
-async def fetch_all_articles(uow: AbstractUnitOfWork) -> list[Article]:
+async def fetch_all_articles(
+    uow: AbstractUnitOfWork,
+    created_by: int | None = None,
+) -> list[Article]:
     async with uow:
-        return await uow.article_repository.retrieve_all_articles()
+        return await uow.article_repository.retrieve_all_articles(created_by)

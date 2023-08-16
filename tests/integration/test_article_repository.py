@@ -74,3 +74,35 @@ class TestRetrieveAllArticles:
 
             assert retrieved_articles == []
             assert repo.seen == set()
+
+
+class TestRetrieveAllArticlesOfUser:
+    async def test_can_retrieve_all_articles_of_user(
+        self,
+        sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
+    ) -> None:
+        article_1 = Article("First Title", "First Preview", "First Body", created_by=1)
+        article_2 = Article("Second Title", "Second Preview", "Second Body", created_by=2)
+        article_3 = Article("Third Title", "Third Preview", "Third Body", created_by=1)
+        async with sqlite_session_factory() as session:
+            repo = SqlAlchemyArticleRepository(session)
+            repo.create_article(article_1)
+            repo.create_article(article_2)
+            repo.create_article(article_3)
+            retrieved_articles = await repo.retrieve_all_articles(created_by=1)
+
+            assert retrieved_articles == [article_1, article_3]
+            assert repo.seen == {article_1, article_2, article_3}
+
+    async def test_cannot_retrieve_all_articles_of_user_from_empty_repo(
+        self,
+        sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
+    ) -> None:
+        article_1 = Article("First Title", "First Preview", "First Body", created_by=1)
+        async with sqlite_session_factory() as session:
+            repo = SqlAlchemyArticleRepository(session)
+            repo.create_article(article_1)
+            retrieved_articles = await repo.retrieve_all_articles(created_by=2)
+
+            assert retrieved_articles == []
+            assert repo.seen == {article_1}

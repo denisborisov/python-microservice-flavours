@@ -65,11 +65,12 @@ async def fetch_article_by_id(
 @router.get("", status_code=200, response_model=list[domain.schemata.Article])
 @dependency_injector.wiring.inject
 async def fetch_all_articles(
+    created_by: int | None = None,
     bus: MessageBus = fastapi.Depends(
         dependency_injector.wiring.Provide[MessageBusContainer.message_bus],
     ),
 ) -> list[domain.model.Article] | JSONResponse:
-    if result := await views.articles.fetch_all_articles(bus.uow):
+    if result := await views.articles.fetch_all_articles(bus.uow, created_by):
         return JSONResponse(content=jsonable_encoder(result))
     return JSONResponse(content="There are no articles at all.",
                         status_code=fastapi.status.HTTP_404_NOT_FOUND)

@@ -23,13 +23,18 @@ class FakeArticleRepository(AbstractArticleRepository):
         article.article_id = uuid.uuid4()
         self.articles.add(article)
 
-    async def _retrieve_article_by_id(self, article_id: uuid.UUID) -> model.Article:
-        filtered_articles = [
-            one_article for one_article in self.articles if one_article.article_id == article_id
-        ]
-        return filtered_articles[0]
+    async def _retrieve_article_by_id(self, article_id: uuid.UUID) -> model.Article | None:
+        if filtered_articles := [
+            one_article
+            for one_article in self.articles
+            if one_article.article_id == article_id
+        ]:
+            return filtered_articles[0]
+        return None
 
-    async def _retrieve_all_articles(self) -> list[model.Article]:
+    async def _retrieve_all_articles(self, created_by: int | None) -> list[model.Article]:
+        if created_by:
+            return [article for article in self.articles if article.created_by == created_by]
         return list(self.articles)
 
 

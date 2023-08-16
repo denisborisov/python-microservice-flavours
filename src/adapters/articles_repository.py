@@ -22,8 +22,8 @@ class AbstractArticleRepository(typing.Protocol):
             self.seen.add(article)
         return article
 
-    async def retrieve_all_articles(self) -> list[Article]:
-        articles = await self._retrieve_all_articles()
+    async def retrieve_all_articles(self, created_by: int | None = None) -> list[Article]:
+        articles = await self._retrieve_all_articles(created_by)
         for one_article in articles:
             self.seen.add(one_article)
         return articles
@@ -34,7 +34,7 @@ class AbstractArticleRepository(typing.Protocol):
     async def _retrieve_article_by_id(self, article_id: uuid.UUID) -> Article | None:
         raise NotImplementedError
 
-    async def _retrieve_all_articles(self) -> list[Article]:
+    async def _retrieve_all_articles(self, created_by: int | None) -> list[Article]:
         raise NotImplementedError
 
 
@@ -52,6 +52,11 @@ class SqlAlchemyArticleRepository(AbstractArticleRepository):
         )
         return result.first()
 
-    async def _retrieve_all_articles(self) -> list[Article]:
-        result = await self.session.scalars(select(Article))
+    async def _retrieve_all_articles(self, created_by: int | None) -> list[Article]:
+        if created_by:
+            result = await self.session.scalars(
+                select(Article).where(Article.created_by == created_by),  # type: ignore[arg-type]
+            )
+        else:
+            result = await self.session.scalars(select(Article))
         return list(result.all())
