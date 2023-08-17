@@ -356,7 +356,7 @@ Status Codes:
 #### 4.2. Response data of DELETE /api/articles/{article_id}
 
 Status Codes:
-  * 202 No Content
+  * 204 No Content
   * 404 Not Found
 <br />
 

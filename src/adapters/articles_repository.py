@@ -7,7 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..domain.exceptions import DatabaseConnectionError
+from ..domain import exceptions
 from ..domain.model import Article
 
 
@@ -30,6 +30,13 @@ class AbstractArticleRepository(typing.Protocol):
             self.seen.add(one_article)
         return articles
 
+    async def delete_article(self, article_id: uuid.UUID) -> None:
+        article = await self.retrieve_article_by_id(article_id)
+        if not article:
+            raise exceptions.ArticleDeletionError(f"No such article with {article_id=}.")
+        await self._delete_article(article)
+        self.seen.remove(article)
+
     def _create_article(self, article: Article) -> None:
         raise NotImplementedError
 
@@ -37,6 +44,9 @@ class AbstractArticleRepository(typing.Protocol):
         raise NotImplementedError
 
     async def _retrieve_all_articles(self, created_by: int | None) -> list[Article]:
+        raise NotImplementedError
+
+    async def _delete_article(self, article: Article) -> None:
         raise NotImplementedError
 
 
@@ -54,7 +64,7 @@ class SqlAlchemyArticleRepository(AbstractArticleRepository):
                 select(Article).where(Article.article_id == article_id),  # type: ignore[arg-type]
             )
         except OperationalError as ex:
-            raise DatabaseConnectionError from ex
+            raise exceptions.DatabaseConnectionError from ex
         else:
             return result.first()
 
@@ -69,6 +79,9 @@ class SqlAlchemyArticleRepository(AbstractArticleRepository):
             else:
                 result = await self.session.scalars(select(Article))
         except OperationalError as ex:
-            raise DatabaseConnectionError from ex
+            raise exceptions.DatabaseConnectionError from ex
         else:
             return list(result.all())
+
+    async def _delete_article(self, article: Article) -> None:
+        await self.session.delete(article)

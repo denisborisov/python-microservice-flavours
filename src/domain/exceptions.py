@@ -4,6 +4,10 @@ class ArticleCreationError(Exception):
     pass
 
 
+class ArticleDeletionError(Exception):
+    pass
+
+
 class CommandHandlingError(Exception):
     pass
 

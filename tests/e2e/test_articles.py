@@ -34,7 +34,7 @@ class TestCreateArticle:
         response = await async_client.post("/api/articles", json=article)
 
         assert response.status_code == http.HTTPStatus.BAD_REQUEST
-        assert response.json().startswith("Failed to create article.")
+        assert response.json()["detail"].startswith("Failed to create article.")
 
     @pytest.mark.parametrize(
         ("title", "preview", "body", "created_by"),
@@ -55,7 +55,7 @@ class TestCreateArticle:
         response = await async_client.post("/api/articles", json=article)
 
         assert response.status_code == http.HTTPStatus.BAD_REQUEST
-        assert response.json().startswith("Failed to create article.")
+        assert response.json()["detail"].startswith("Failed to create article.")
 
     @pytest.mark.parametrize(
         ("title", "preview", "body", "created_by"),
@@ -76,7 +76,7 @@ class TestCreateArticle:
         response = await async_client.post("/api/articles", json=article)
 
         assert response.status_code == http.HTTPStatus.BAD_REQUEST
-        assert response.json().startswith("Failed to create article.")
+        assert response.json()["detail"].startswith("Failed to create article.")
 
 
 class TestFetchArticleById:
@@ -102,6 +102,7 @@ class TestFetchArticleById:
         response = await async_client.get(f"/api/articles/{post_response.json()['article_id']}")
 
         assert response.status_code == http.HTTPStatus.OK
+        assert uuid.UUID(response.json()["article_id"])
         assert response.json()["title"] == article_2["title"]
         assert response.json()["preview"] == article_2["preview"]
         assert response.json()["body"] == article_2["body"]
@@ -123,12 +124,12 @@ class TestFetchArticleById:
         await async_client.post("/api/articles", json=article_1)
         await async_client.post("/api/articles", json=article_2)
 
-        nonexistent_article_id = uuid.uuid4()
-        response = await async_client.get(f"/api/articles/{nonexistent_article_id!s}")
+        article_id = uuid.uuid4()
+        response = await async_client.get(f"/api/articles/{article_id}")
 
         assert response.status_code == http.HTTPStatus.NOT_FOUND
         assert response.json() == \
-            f"Article with article_id='{nonexistent_article_id!s}' has not been found."
+            f"Article with {article_id=} has not been found."
 
 
 class TestFetchAllArticles:
@@ -154,11 +155,13 @@ class TestFetchAllArticles:
 
         assert response.status_code == http.HTTPStatus.OK
 
+        assert uuid.UUID(response.json()[0]["article_id"])
         assert response.json()[0]["title"] == article_1["title"]
         assert response.json()[0]["preview"] == article_1["preview"]
         assert response.json()[0]["body"] == article_1["body"]
         assert response.json()[0]["created_by"] == article_1["created_by"]
 
+        assert uuid.UUID(response.json()[1]["article_id"])
         assert response.json()[1]["title"] == article_2["title"]
         assert response.json()[1]["preview"] == article_2["preview"]
         assert response.json()[1]["body"] == article_2["body"]
@@ -203,11 +206,13 @@ class TestFetchAllArticlesOfOneUser:
 
         assert response.status_code == http.HTTPStatus.OK
 
+        assert uuid.UUID(response.json()[0]["article_id"])
         assert response.json()[0]["title"] == article_1["title"]
         assert response.json()[0]["preview"] == article_1["preview"]
         assert response.json()[0]["body"] == article_1["body"]
         assert response.json()[0]["created_by"] == article_1["created_by"]
 
+        assert uuid.UUID(response.json()[1]["article_id"])
         assert response.json()[1]["title"] == article_3["title"]
         assert response.json()[1]["preview"] == article_3["preview"]
         assert response.json()[1]["body"] == article_3["body"]
@@ -228,3 +233,47 @@ class TestFetchAllArticlesOfOneUser:
 
         assert response.status_code == http.HTTPStatus.NOT_FOUND
         assert response.json() == "There are no articles at all."
+
+
+class TestDeleteArticle:
+    async def test_happy_path_returns_204(self, async_client: AsyncClient) -> None:
+        article_1 = {
+            "title": "First Title",
+            "preview": "First Preview",
+            "body": "First Body",
+            "created_by": 1,
+        }
+        article_2 = {
+            "title": "Second Title",
+            "preview": "Second Preview",
+            "body": "Second Body",
+            "created_by": 2,
+        }
+        await async_client.post("/api/articles", json=article_1)
+        response = await async_client.post("/api/articles", json=article_2)
+
+        response = await async_client.delete(
+            f"/api/articles/{response.json()['article_id']}",
+        )
+        assert response.status_code == http.HTTPStatus.NO_CONTENT
+
+        response = await async_client.get("/api/articles")
+        assert len(response.json()) == 1
+        assert uuid.UUID(response.json()[0]["article_id"])
+        assert response.json()[0]["title"] == article_1["title"]
+        assert response.json()[0]["preview"] == article_1["preview"]
+        assert response.json()[0]["body"] == article_1["body"]
+        assert response.json()[0]["created_by"] == article_1["created_by"]
+
+    async def test_cannot_delete_nonexistent_article(self, async_client: AsyncClient) -> None:
+        await async_client.delete(f"/api/articles/{uuid.uuid4()}")
+
+        response = await async_client.get("/api/articles")
+
+        assert response.status_code == http.HTTPStatus.NOT_FOUND
+
+    async def test_returns_400_if_bad_article_id(self, async_client: AsyncClient) -> None:
+        article_id = uuid.uuid4()
+        response = await async_client.delete(f"/api/articles/{article_id}")
+        assert response.json()["detail"] == f"No such article with {article_id=}."
+        assert response.status_code == http.HTTPStatus.NOT_FOUND

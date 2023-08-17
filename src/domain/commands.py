@@ -1,7 +1,8 @@
 """Commands."""
 
-import typing
 from dataclasses import dataclass
+import typing
+import uuid
 
 from . import exceptions
 
@@ -29,3 +30,8 @@ class CreateArticle(Command):
             )
         if not self.body:
             raise exceptions.ArticleCreationError("Cannot create an article with an empty body.")
+
+
+@dataclass
+class DeleteArticle(Command):
+    article_id: uuid.UUID

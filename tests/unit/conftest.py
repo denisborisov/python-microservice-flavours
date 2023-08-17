@@ -37,6 +37,9 @@ class FakeArticleRepository(AbstractArticleRepository):
             return [article for article in self.articles if article.created_by == created_by]
         return list(self.articles)
 
+    async def _delete_article(self, article: model.Article) -> None:
+        self.articles.remove(article)
+
 
 class FakeUnitOfWork(AbstractUnitOfWork):
     def __init__(self) -> None:

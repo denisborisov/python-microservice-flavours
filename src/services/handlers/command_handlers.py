@@ -18,9 +18,19 @@ async def create_article(
         return article.article_id
 
 
+async def delete_article(
+    cmd: domain.commands.DeleteArticle,
+    uow: AbstractUnitOfWork,
+) -> None:
+    async with uow:
+        await uow.article_repository.delete_article(cmd.article_id)
+        await uow.commit()
+
+
 COMMAND_HANDLERS: dict[
     type[domain.commands.Command],
     typing.Callable[[domain.commands.Command, AbstractUnitOfWork], typing.Any],
 ] = {
     domain.commands.CreateArticle: create_article,
+    domain.commands.DeleteArticle: delete_article,
 }
