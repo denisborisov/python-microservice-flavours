@@ -6,11 +6,13 @@ import typing
 import typing_extensions
 
 import dependency_injector.wiring
+from sqlalchemy.exc import OperationalError
 import sqlalchemy.ext.asyncio
 
 from .. import adapters
 from ..containers.http_client import HttpClientContainer
 from ..containers.session_factory import SessionFactoryContainer
+from ..domain.exceptions import DatabaseConnectionError
 from ..services.http_client import AbstractHttpClient
 
 
@@ -87,8 +89,14 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
         return None
 
     async def _commit(self) -> None:
-        await self._session.commit()
+        try:
+            await self._session.commit()
+        except OperationalError as ex:
+            raise DatabaseConnectionError from ex
 
     async def _rollback(self) -> None:
         self._session.expunge_all()
-        await self._session.rollback()
+        try:
+            await self._session.rollback()
+        except OperationalError as ex:
+            raise DatabaseConnectionError from ex

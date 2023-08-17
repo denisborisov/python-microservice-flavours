@@ -1,16 +1,14 @@
 """Integration tests related to unit of work."""
 
 import contextlib
-import typing
+import pytest
 import uuid
 
 from sqlalchemy import text
 import sqlalchemy.ext.asyncio
 
+from src.domain.exceptions import DatabaseConnectionError
 from src.services.unit_of_work import SqlAlchemyUnitOfWork
-
-if typing.TYPE_CHECKING:
-    from src.domain import model
 
 
 async def insert_article(
@@ -108,14 +106,46 @@ class TestUnitOfWork:
         with contextlib.suppress(MyError):
             async with SqlAlchemyUnitOfWork(session_factory=sqlite_session_factory) as uow:
                 await insert_article(
+                    uow._session,  # noqa: SLF001
+                    "Title",
+                    "Preview",
+                    "Body",
+                    created_by=1,
+                )
+                raise MyError
+
+        async with sqlite_session_factory() as new_session:
+            articles = await new_session.execute(text("SELECT * FROM articles"))
+            assert not list(articles)
+
+    async def test_raises_exception_when_commit_on_disconnected_database(
+        self,
+        sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
+    ) -> None:
+        async with SqlAlchemyUnitOfWork(session_factory=sqlite_session_factory) as uow:
+            await insert_article(
                 uow._session,  # noqa: SLF001
                 "Title",
                 "Preview",
                 "Body",
                 created_by=1,
             )
-                raise MyError
+            await uow._session.bind.dispose()  # type: ignore[union-attr] # noqa: SLF001
+            with pytest.raises(DatabaseConnectionError):
+                await uow.commit()
 
-        async with sqlite_session_factory() as new_session:
-            articles = await new_session.execute(text("SELECT * FROM articles"))
-            assert not list(articles)
+    async def test_raises_exception_when_rollback_on_disconnected_database(
+        self,
+        sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
+    ) -> None:
+        async with SqlAlchemyUnitOfWork(session_factory=sqlite_session_factory) as uow:
+            await insert_article(
+                uow._session,  # noqa: SLF001
+                "Title",
+                "Preview",
+                "Body",
+                created_by=1,
+            )
+            await uow._session.bind.dispose()  # type: ignore[union-attr] # noqa: SLF001
+            with pytest.raises(DatabaseConnectionError):
+                await uow.rollback()

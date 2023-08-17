@@ -4,8 +4,10 @@ import typing
 import uuid
 
 from sqlalchemy import select
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..domain.exceptions import DatabaseConnectionError
 from ..domain.model import Article
 
 
@@ -47,16 +49,26 @@ class SqlAlchemyArticleRepository(AbstractArticleRepository):
         self.session.add(article)
 
     async def _retrieve_article_by_id(self, article_id: uuid.UUID) -> Article | None:
-        result = await self.session.scalars(
-            select(Article).where(Article.article_id == article_id),  # type: ignore[arg-type]
-        )
-        return result.first()
+        try:
+            result = await self.session.scalars(
+                select(Article).where(Article.article_id == article_id),  # type: ignore[arg-type]
+            )
+        except OperationalError as ex:
+            raise DatabaseConnectionError from ex
+        else:
+            return result.first()
 
     async def _retrieve_all_articles(self, created_by: int | None) -> list[Article]:
-        if created_by:
-            result = await self.session.scalars(
-                select(Article).where(Article.created_by == created_by),  # type: ignore[arg-type]
-            )
+        try:
+            if created_by:
+                result = await self.session.scalars(
+                    select(Article).where(
+                        Article.created_by == created_by,  # type: ignore[arg-type]
+                    ),
+                )
+            else:
+                result = await self.session.scalars(select(Article))
+        except OperationalError as ex:
+            raise DatabaseConnectionError from ex
         else:
-            result = await self.session.scalars(select(Article))
-        return list(result.all())
+            return list(result.all())
