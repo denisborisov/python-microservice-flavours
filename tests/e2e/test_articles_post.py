@@ -2,6 +2,7 @@
 
 import http
 import pytest
+import uuid
 
 from httpx import AsyncClient
 
@@ -12,7 +13,7 @@ class TestCreateArticle:
         response = await async_client.post("/api/articles", json=article)
 
         assert response.status_code == http.HTTPStatus.CREATED
-        assert response.json()
+        assert uuid.UUID(response.json()["article_id"])
 
     @pytest.mark.parametrize(
         ("title", "preview", "body", "created_by"),
