@@ -1,7 +1,5 @@
 """Routines related to mappers."""
 
-import typing
-
 import sqlalchemy
 import sqlalchemy.orm
 
