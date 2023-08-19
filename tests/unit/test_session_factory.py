@@ -12,6 +12,7 @@ class TestSessionFactory:
         session_factory: sqlalchemy.ext.asyncio.async_sessionmaker = get_default_session_factory(
             engine=in_memory_sqlite_db,
         )
+
         assert session_factory.kw["bind"] == in_memory_sqlite_db
         assert not session_factory.kw["autocommit"]
         assert not session_factory.kw["autoflush"]

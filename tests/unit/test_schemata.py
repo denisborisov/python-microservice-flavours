@@ -14,6 +14,7 @@ class TestArticlePost:
             body="Body",
             created_by=1,
         )
+
         assert article.title == "Title"
         assert article.preview == "Preview"
         assert article.body == "Body"
@@ -33,6 +34,7 @@ class TestArticlePost:
 class TestArticle:
     def test_can_create_article(self) -> None:
         article_id = uuid.uuid4()
+
         article = schemata.Article(
             article_id=article_id,
             title="Title",
@@ -40,6 +42,7 @@ class TestArticle:
             body="Body",
             created_by=1,
         )
+
         assert article.article_id == article_id
         assert article.title == "Title"
         assert article.preview == "Preview"

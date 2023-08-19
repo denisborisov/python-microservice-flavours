@@ -7,27 +7,60 @@ from src.services.unit_of_work import AbstractUnitOfWork
 from src import views
 
 
+class ServiceClass:
+    @staticmethod
+    def create_articles_in_repository(
+        fake_uow: AbstractUnitOfWork,
+        *article_data: dict,
+    ) -> list[Article]:
+        articles: list[Article] = []
+        for one_dict in article_data:
+            article = Article(
+                one_dict["title"], one_dict["preview"],
+                one_dict["body"], one_dict["created_by"],
+            )
+            articles.append(article)
+            fake_uow.article_repository.create_article(article)
+        return articles
+
+
 class TestFetchArticleByIdView:
     async def test_can_fetch_article_by_id(self, fake_uow: AbstractUnitOfWork) -> None:
-        articles = (
-            Article("First Title", "First Preview", "First Body", created_by=1),
-            Article("Second Title", "Second Preview", "Second Body", created_by=2),
+        articles = ServiceClass.create_articles_in_repository(
+            fake_uow,
+            {
+                "title": "FIRST TITLE",
+                "preview": "FIRST PREVIEW",
+                "body": "FIRST BODY",
+                "created_by": 1,
+            },
+            {
+                "title": "SECOND TITLE",
+                "preview": "SECOND PREVIEW",
+                "body": "SECOND BODY",
+                "created_by": 2,
+            },
         )
-        fake_uow.article_repository.create_article(articles[0])
-        fake_uow.article_repository.create_article(articles[1])
 
         fetched_article = await views.articles.fetch_article_by_id(
-            articles[1].article_id, uow=fake_uow,
+            articles[0].article_id, uow=fake_uow,
         )
 
-        assert fetched_article == articles[1]
+        assert fetched_article == articles[0]
 
     async def test_cannot_fetch_article_with_nonexistent_id(
         self,
         fake_uow: AbstractUnitOfWork,
     ) -> None:
-        article = Article("First Title", "First Preview", "First Body", created_by=1)
-        fake_uow.article_repository.create_article(article)
+        ServiceClass.create_articles_in_repository(
+            fake_uow,
+            {
+                "title": "FIRST TITLE",
+                "preview": "FIRST PREVIEW",
+                "body": "FIRST BODY",
+                "created_by": 1,
+            },
+        )
 
         fetched_article: Article | None = await views.articles.fetch_article_by_id(
             uuid.uuid4(),
@@ -39,12 +72,21 @@ class TestFetchArticleByIdView:
 
 class TestFetchAllArticlesView:
     async def test_can_fetch_all_articles(self, fake_uow: AbstractUnitOfWork) -> None:
-        articles = (
-            Article("First Title", "First Preview", "First Body", created_by=1),
-            Article("Second Title", "Second Preview", "Second Body", created_by=2),
+        articles = ServiceClass.create_articles_in_repository(
+            fake_uow,
+            {
+                "title": "FIRST TITLE",
+                "preview": "FIRST PREVIEW",
+                "body": "FIRST BODY",
+                "created_by": 1,
+            },
+            {
+                "title": "SECOND TITLE",
+                "preview": "SECOND PREVIEW",
+                "body": "SECOND BODY",
+                "created_by": 2,
+            },
         )
-        fake_uow.article_repository.create_article(articles[0])
-        fake_uow.article_repository.create_article(articles[1])
 
         fetched_articles: list[Article] = await views.articles.fetch_all_articles(fake_uow)
 
@@ -63,14 +105,27 @@ class TestFetchAllArticlesView:
 
 class TestFetchAllArticlesOfUserView:
     async def test_fetch_all_articles_of_user(self, fake_uow: AbstractUnitOfWork) -> None:
-        articles = (
-            Article("First Title", "First Preview", "First Body", created_by=1),
-            Article("Second Title", "Second Preview", "Second Body", created_by=2),
-            Article("Third Title", "Third Preview", "Third Body", created_by=1),
+        articles = ServiceClass.create_articles_in_repository(
+            fake_uow,
+            {
+                "title": "FIRST TITLE",
+                "preview": "FIRST PREVIEW",
+                "body": "FIRST BODY",
+                "created_by": 1,
+            },
+            {
+                "title": "SECOND TITLE",
+                "preview": "SECOND PREVIEW",
+                "body": "SECOND BODY",
+                "created_by": 2,
+            },
+            {
+                "title": "THIRD TITLE",
+                "preview": "THIRD PREVIEW",
+                "body": "THIRD BODY",
+                "created_by": 1,
+            },
         )
-        fake_uow.article_repository.create_article(articles[0])
-        fake_uow.article_repository.create_article(articles[1])
-        fake_uow.article_repository.create_article(articles[2])
 
         fetched_articles: list[Article] = await views.articles.fetch_all_articles(
             fake_uow,
@@ -84,12 +139,9 @@ class TestFetchAllArticlesOfUserView:
         self,
         fake_uow: AbstractUnitOfWork,
     ) -> None:
-        article = Article("First Title", "First Preview", "First Body", created_by=1)
-        fake_uow.article_repository.create_article(article)
-
         fetched_articles: list[Article] = await views.articles.fetch_all_articles(
             fake_uow,
-            created_by=2,
+            created_by=1,
         )
 
         assert not fetched_articles

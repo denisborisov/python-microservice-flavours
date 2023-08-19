@@ -8,10 +8,17 @@ from src.api import endpoints
 from src.containers.wiring import attach_containers_to_app
 
 
-class TestDependencyInjection:
-    def test_containers_attached_to_app(self) -> None:
+class ServiceClass:
+    @staticmethod
+    def create_fastapi_app() -> FastAPI:
         app = FastAPI()
         attach_containers_to_app(app)
+        return app
+
+
+class TestDependencyInjection:
+    def test_containers_attached_to_app(self) -> None:
+        app = ServiceClass.create_fastapi_app()
 
         containers = [attribute for attribute in app.__dict__ if attribute.endswith("_container")]
 
@@ -23,8 +30,7 @@ class TestDependencyInjection:
         assert getattr(app, "unit_of_work_container", None)
 
     def test_required_modules_are_wired_to_containers(self) -> None:
-        app = FastAPI()
-        attach_containers_to_app(app)
+        app = ServiceClass.create_fastapi_app()
 
         assert getattr(app, "database_engine_container").wired_to_modules == [
             routines.database_engine,

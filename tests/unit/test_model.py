@@ -6,6 +6,19 @@ import uuid
 from src.domain import model
 
 
+class ServiceClass:
+    @staticmethod
+    def create_aricle(
+        article_data: dict,
+    ) -> model.Article:
+        article = model.Article(
+            article_data["title"], article_data["preview"],
+            article_data["body"], article_data["created_by"],
+        )
+        article.article_id = article_data.get("article_id") or article.article_id
+        return article
+
+
 class TestArticles:
     @pytest.mark.parametrize(
         ("title", "preview", "body", "created_by"),
@@ -22,7 +35,14 @@ class TestArticles:
         body: str,
         created_by: int,
     ) -> None:
-        article = model.Article(title, preview, body, created_by)
+        article = ServiceClass.create_aricle(
+            {
+                "title": title,
+                "preview": preview,
+                "body": body,
+                "created_by": created_by,
+            },
+        )
 
         assert isinstance(article.article_id, uuid.UUID)
         assert article.title == title
@@ -55,10 +75,25 @@ class TestArticles:
         b_article_id: uuid.UUID, b_title: str, b_preview: str, b_body: str, b_created_by: int,
         equality: bool, cardinality: int,
     ) -> None:
-        article_1 = model.Article(a_title, a_preview, a_body, a_created_by)
-        article_1.article_id = a_article_id
-        article_2 = model.Article(b_title, b_preview, b_body, b_created_by)
-        article_2.article_id = b_article_id
+        article_1 = ServiceClass.create_aricle(
+            {
+                "article_id": a_article_id,
+                "title": a_title,
+                "preview": a_preview,
+                "body": a_body,
+                "created_by": a_created_by,
+            },
+        )
+
+        article_2 = ServiceClass.create_aricle(
+            {
+                "article_id": b_article_id,
+                "title": b_title,
+                "preview": b_preview,
+                "body": b_body,
+                "created_by": b_created_by,
+            },
+        )
 
         assert (article_1 == article_2) is equality
         assert len({article_1, article_2}) == cardinality

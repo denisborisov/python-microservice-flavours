@@ -9,6 +9,23 @@ from src.domain.commands import Command
 from src.domain.exceptions import CommandHandlingError
 from src.services.message_bus import MessageBus
 
+class ServiceClass:
+    class NonExistentCommand(Command):
+            pass
+
+    @staticmethod
+    async def start_and_stop_processing_events(fake_bus: MessageBus) -> tuple[float, float]:
+        start = time.time()
+        fake_bus.start_process_events()
+        await fake_bus.stop_process_events()
+        stop = time.time()
+        return (start, stop)
+
+    @staticmethod
+    def one_event_has_been_processed(capsys: pytest.CaptureFixture) -> bool:
+        std_out: str = capsys.readouterr().out
+        return std_out == "."
+
 
 class TestMessageBus:
     async def test_can_handle_command(self, fake_bus: MessageBus) -> None:
@@ -18,16 +35,15 @@ class TestMessageBus:
                 conftest.SendTwoEmails("eggs"),
             ),
         )
+
         articles = await fake_bus.uow.article_repository.retrieve_all_articles()
 
         assert len(articles) == 1
         assert fake_bus._event_queue.qsize() == 2  # noqa: SLF001, PLR2004
 
     async def test_cannot_handle_nonexistent_command(self, fake_bus: MessageBus) -> None:
-        class NonExistentCommand(Command):
-            pass
+        command = ServiceClass.NonExistentCommand()
 
-        command = NonExistentCommand()
         with pytest.raises(CommandHandlingError) as exc_info:
             await fake_bus.handle(command)
 
@@ -45,6 +61,7 @@ class TestMessageBus:
                 conftest.SendTwoEmails("eggs"),
             ),
         )
+
         assert not fake_bus._event_queue.qsize()  # noqa: SLF001
         assert capsys.readouterr().out == "spam\neggs\neggs\n"
 
@@ -64,17 +81,14 @@ class TestEventsProcessingCycle:
         ) -> None:
         await fake_bus._event_queue.put(conftest.SleepEvent(1))  # noqa: SLF001
 
-        fake_bus.start_process_events()
-        await fake_bus.stop_process_events()
+        await ServiceClass.start_and_stop_processing_events(fake_bus)
 
-        assert capsys.readouterr().out == "."
+        assert ServiceClass.one_event_has_been_processed(capsys)
 
     async def test_queued_events_are_processed_asynchronously(self, fake_bus: MessageBus) -> None:
         for one_event in [conftest.SleepEvent(1) for _ in range(10)]:
             await fake_bus._event_queue.put(one_event)  # noqa: SLF001
-        start = time.time()
-        fake_bus.start_process_events()
-        await fake_bus.stop_process_events()
-        stop = time.time()
+
+        start, stop = await ServiceClass.start_and_stop_processing_events(fake_bus)
 
         assert stop - start < 2  # noqa: PLR2004
