@@ -69,7 +69,38 @@ async def fetch_all_articles(
                         status_code=fastapi.status.HTTP_404_NOT_FOUND)
 
 
-@router.delete("/{article_id}", status_code=204)
+@router.patch("/{article_id}", status_code=200, response_model=None)
+@dependency_injector.wiring.inject
+async def update_article(
+    article_id: uuid.UUID,
+    article: domain.schemata.ArticlePatch,
+    bus: MessageBus = fastapi.Depends(
+        dependency_injector.wiring.Provide[MessageBusContainer.message_bus],
+    ),
+) -> None:
+    try:
+        cmd = domain.commands.UpdateArticle(
+            article_id,
+            article.title,
+            article.preview,
+            article.body,
+        )
+    except exceptions.ArticleModificationError as ex:
+        raise fastapi.HTTPException(
+            detail="Failed to update article.",
+            status_code=fastapi.status.HTTP_400_BAD_REQUEST,
+        ) from ex
+
+    try:
+        await bus.handle(cmd)
+    except exceptions.ArticleModificationError as ex:
+        raise fastapi.HTTPException(
+            detail=str(ex),
+            status_code=fastapi.status.HTTP_404_NOT_FOUND,
+        ) from ex
+
+
+@router.delete("/{article_id}", status_code=204, response_model=None)
 @dependency_injector.wiring.inject
 async def delete_article(
     article_id: uuid.UUID,

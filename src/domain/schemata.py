@@ -38,3 +38,19 @@ class Article(ArticlePost):
                 "created_by": 1,
             },
         }
+
+
+class ArticlePatch(BaseModel):
+    title: str | None = None
+    preview: str | None = None
+    body: str | None = None
+
+    class Config:
+        json_schema_extra: typing.ClassVar[dict] = {
+            "example": {
+                "title": "Заголовок статьи",
+                "preview": "Небольшое превью, размером с абзац-два, чтобы понять, "
+                           "о чём идёт речь в статье.",
+                "body": "Содержимое статьи, сколь угодно большое",
+            },
+        }

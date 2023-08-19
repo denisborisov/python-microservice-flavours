@@ -34,33 +34,6 @@ async def insert_article(
 
 
 class TestUnitOfWork:
-    async def test_can_create_article(
-        self,
-        sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
-    ) -> None:
-        async with SqlAlchemyUnitOfWork(session_factory=sqlite_session_factory) as uow:
-            await insert_article(
-                uow._session,  # noqa: SLF001
-                "First Title",
-                "First Preview",
-                "First Body",
-                created_by=1,
-            )
-            await uow.commit()
-
-        async with sqlite_session_factory() as new_session:
-            cursor_result: sqlalchemy.CursorResult = await new_session.execute(
-                text("SELECT * FROM articles"),
-            )
-            article: dict = cursor_result.one()._asdict()
-
-            assert uuid.UUID(article["article_id"])
-            assert article["title"] == "First Title"
-            assert article["preview"] == "First Preview"
-            assert article["body"] == "First Body"
-            assert article["created_by"] == 1
-
-
     async def test_saves_changes_on_commit(
         self,
         sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,

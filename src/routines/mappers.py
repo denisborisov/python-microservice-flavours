@@ -1,5 +1,8 @@
 """Routines related to mappers."""
 
+import typing
+
+import sqlalchemy
 import sqlalchemy.orm
 
 from ..adapters import orm
@@ -18,3 +21,8 @@ def start_mappers() -> None:
 
 def stop_mappers() -> None:
     mapper_registry.dispose()
+
+
+@sqlalchemy.event.listens_for(model.Article, "load")
+def receive_load(article: model.Article, _: sqlalchemy.orm.QueryContext) -> None:
+    article.events = []

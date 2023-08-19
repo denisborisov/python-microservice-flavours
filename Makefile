@@ -17,6 +17,7 @@ test-app: lint-all
 up-db:
     # Run a PostgreSQL container
 	podman-compose up -d
+	sleep 1
 
 up-alembic: up-db
     # Run Alembic migrations

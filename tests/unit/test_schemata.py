@@ -1,5 +1,6 @@
 """Unit tests related to schemata."""
 
+import pytest
 import uuid
 
 from src.domain import schemata
@@ -55,3 +56,36 @@ class TestArticle:
         )
         assert config["example"]["body"] == "Содержимое статьи, сколь угодно большое"
         assert config["example"]["created_by"] == 1
+
+class TestArticlePatch:
+    @pytest.mark.parametrize(
+        ("patch_data"),
+        [
+            ({}),
+            ({"title": "Another Title"}),
+            ({"preview": "Another Preview"}),
+            ({"body": "Another Body"}),
+            (
+                {
+                    "title": "Another Title",
+                    "preview": "Another Preview",
+                    "body": "Another Body",
+                }
+            ),
+        ],
+    )
+    def test_can_create_article_patch(self, patch_data: dict) -> None:
+        article = schemata.ArticlePatch(**patch_data)
+
+        assert article.title == patch_data.get("title")
+        assert article.preview == patch_data.get("preview")
+        assert article.body == patch_data.get("body")
+
+    def test_article_post_contains_valid_config(self) -> None:
+        config = schemata.ArticlePost.Config.json_schema_extra
+
+        assert config["example"]["title"] == "Заголовок статьи"
+        assert config["example"]["preview"] == (
+            "Небольшое превью, размером с абзац-два, чтобы понять, о чём идёт речь в статье."
+        )
+        assert config["example"]["body"] == "Содержимое статьи, сколь угодно большое"

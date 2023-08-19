@@ -30,6 +30,22 @@ class AbstractArticleRepository(typing.Protocol):
             self.seen.add(one_article)
         return articles
 
+    async def update_article(
+        self,
+        article_id: uuid.UUID,
+        title: str | None,
+        preview: str | None,
+        body: str | None,
+    ) -> None:
+        article = await self.retrieve_article_by_id(article_id)
+        if not article:
+            raise exceptions.ArticleModificationError(
+                f"Article with {article_id=} has not been found.",
+            )
+        article.title = title or article.title
+        article.preview = preview or article.preview
+        article.body = body or article.body
+
     async def delete_article(self, article_id: uuid.UUID) -> None:
         article = await self.retrieve_article_by_id(article_id)
         if not article:
@@ -65,8 +81,8 @@ class SqlAlchemyArticleRepository(AbstractArticleRepository):
             )
         except OperationalError as ex:
             raise exceptions.DatabaseConnectionError from ex
-        else:
-            return result.first()
+
+        return result.first()
 
     async def _retrieve_all_articles(self, created_by: int | None) -> list[Article]:
         try:
@@ -80,8 +96,8 @@ class SqlAlchemyArticleRepository(AbstractArticleRepository):
                 result = await self.session.scalars(select(Article))
         except OperationalError as ex:
             raise exceptions.DatabaseConnectionError from ex
-        else:
-            return list(result.all())
+
+        return list(result)
 
     async def _delete_article(self, article: Article) -> None:
         await self.session.delete(article)
