@@ -9,6 +9,7 @@ from src.domain.commands import Command
 from src.domain.exceptions import CommandHandlingError
 from src.services.message_bus import MessageBus
 
+
 class ServiceClass:
     class NonExistentCommand(Command):
             pass

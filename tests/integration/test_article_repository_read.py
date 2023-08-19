@@ -5,9 +5,9 @@ import uuid
 
 import sqlalchemy.ext.asyncio
 
+from .conftest import ServiceClass
 from src.adapters.articles_repository import SqlAlchemyArticleRepository
 from src.domain import exceptions
-from src.domain.model import Article
 
 
 class TestRetrieveArticleById:
@@ -15,11 +15,20 @@ class TestRetrieveArticleById:
         self,
         sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
     ) -> None:
-        article = Article("Title", "Preview", "Body", created_by=1)
         async with sqlite_session_factory() as session:
-            repo = SqlAlchemyArticleRepository(session)
-            repo.create_article(article)
-            retrieved_article = await repo.retrieve_article_by_id(article.article_id)
+            repo, article = ServiceClass.create_repository_with_one_article(
+                session,
+                {
+                    "title": "TITLE",
+                    "preview": "PREVIEW",
+                    "body": "BODY",
+                    "created_by": 1,
+                },
+            )
+
+            retrieved_article = await repo.retrieve_article_by_id(
+                article.article_id,  # type: ignore[union-attr]
+            )
 
             assert retrieved_article == article
             assert retrieved_article in repo.seen
@@ -30,6 +39,7 @@ class TestRetrieveArticleById:
     ) -> None:
         async with sqlite_session_factory() as session:
             repo = SqlAlchemyArticleRepository(session)
+
             retrieved_article = await repo.retrieve_article_by_id(uuid.uuid4())
 
             assert retrieved_article is None
@@ -39,14 +49,24 @@ class TestRetrieveArticleById:
         self,
         sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
     ) -> None:
-        article = Article("Title", "Preview", "Body", created_by=1)
         async with sqlite_session_factory() as session:
-            repo = SqlAlchemyArticleRepository(session)
-            repo.create_article(article)
+            repo, article = ServiceClass.create_repository_with_one_article(
+                session,
+                {
+                    "title": "TITLE",
+                    "preview": "PREVIEW",
+                    "body": "BODY",
+                    "created_by": 1,
+                },
+            )
 
             await session.bind.dispose()
+
             with pytest.raises(exceptions.DatabaseConnectionError):  # noqa: PT012
-                retrieved_article = await repo.retrieve_article_by_id(article.article_id)
+                retrieved_article = await repo.retrieve_article_by_id(
+                    article.article_id,  # type: ignore[union-attr]
+                )
+
                 assert not retrieved_article
                 assert retrieved_article not in repo.seen
 
@@ -56,16 +76,27 @@ class TestRetrieveAllArticles:
         self,
         sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
     ) -> None:
-        article_1 = Article("First Title", "First Preview", "First Body", created_by=1)
-        article_2 = Article("Second Title", "Second Preview", "Second Body", created_by=2)
         async with sqlite_session_factory() as session:
-            repo = SqlAlchemyArticleRepository(session)
-            repo.create_article(article_1)
-            repo.create_article(article_2)
+            repo, articles = ServiceClass.create_repository_with_one_article(
+                session,
+                {
+                    "title": "FIRST TITLE",
+                    "preview": "FIRST PREVIEW",
+                    "body": "FIRST BODY",
+                    "created_by": 1,
+                },
+                {
+                    "title": "SECOND TITLE",
+                    "preview": "SECOND PREVIEW",
+                    "body": "SECOND BODY",
+                    "created_by": 2,
+                },
+            )
+
             retrieved_articles = await repo.retrieve_all_articles()
 
-            assert retrieved_articles == [article_1, article_2]
-            assert repo.seen == {article_1, article_2}
+            assert retrieved_articles == articles
+            assert repo.seen == set(articles)  # type: ignore[arg-type]
 
     async def test_cannot_retrieve_all_articles_from_empty_repo(
         self,
@@ -73,6 +104,7 @@ class TestRetrieveAllArticles:
     ) -> None:
         async with sqlite_session_factory() as session:
             repo = SqlAlchemyArticleRepository(session)
+
             retrieved_articles = await repo.retrieve_all_articles()
 
             assert retrieved_articles == []
@@ -82,19 +114,30 @@ class TestRetrieveAllArticles:
         self,
         sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
     ) -> None:
-        article_1 = Article("First Title", "First Preview", "First Body", created_by=1)
-        article_2 = Article("Second Title", "Second Preview", "Second Body", created_by=2)
         async with sqlite_session_factory() as session:
-            repo = SqlAlchemyArticleRepository(session)
-            repo.create_article(article_1)
-            repo.create_article(article_2)
+            repo, articles = ServiceClass.create_repository_with_one_article(
+                session,
+                {
+                    "title": "FIRST TITLE",
+                    "preview": "FIRST PREVIEW",
+                    "body": "FIRST BODY",
+                    "created_by": 1,
+                },
+                {
+                    "title": "SECOND TITLE",
+                    "preview": "SECOND PREVIEW",
+                    "body": "SECOND BODY",
+                    "created_by": 2,
+                },
+            )
 
             await session.bind.dispose()
+
             with pytest.raises(exceptions.DatabaseConnectionError):  # noqa: PT012
                 retrieved_articles = await repo.retrieve_all_articles()
                 assert not retrieved_articles
 
-            assert repo.seen == {article_1, article_2}
+            assert repo.seen == set(articles)  # type: ignore[arg-type]
 
 
 class TestRetrieveAllArticlesOfUser:
@@ -102,48 +145,85 @@ class TestRetrieveAllArticlesOfUser:
         self,
         sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
     ) -> None:
-        article_1 = Article("First Title", "First Preview", "First Body", created_by=1)
-        article_2 = Article("Second Title", "Second Preview", "Second Body", created_by=2)
-        article_3 = Article("Third Title", "Third Preview", "Third Body", created_by=1)
         async with sqlite_session_factory() as session:
-            repo = SqlAlchemyArticleRepository(session)
-            repo.create_article(article_1)
-            repo.create_article(article_2)
-            repo.create_article(article_3)
+            repo, articles = ServiceClass.create_repository_with_one_article(
+                session,
+                {
+                    "title": "FIRST TITLE",
+                    "preview": "FIRST PREVIEW",
+                    "body": "FIRST BODY",
+                    "created_by": 1,
+                },
+                {
+                    "title": "SECOND TITLE",
+                    "preview": "SECOND PREVIEW",
+                    "body": "SECOND BODY",
+                    "created_by": 2,
+                },
+                {
+                    "title": "THIRD TITLE",
+                    "preview": "THIRD PREVIEW",
+                    "body": "THIRD BODY",
+                    "created_by": 1,
+                },
+            )
+
             retrieved_articles = await repo.retrieve_all_articles(created_by=1)
 
-            assert retrieved_articles == [article_1, article_3]
-            assert repo.seen == {article_1, article_2, article_3}
+            assert retrieved_articles == [articles[0], articles[2]]  # type: ignore[index]
+            assert repo.seen == set(articles)  # type: ignore[arg-type]
 
     async def test_cannot_retrieve_all_articles_of_user_from_empty_repo(
         self,
         sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
     ) -> None:
-        article_1 = Article("First Title", "First Preview", "First Body", created_by=1)
         async with sqlite_session_factory() as session:
-            repo = SqlAlchemyArticleRepository(session)
-            repo.create_article(article_1)
+            repo, article = ServiceClass.create_repository_with_one_article(
+                session,
+                {
+                    "title": "TITLE",
+                    "preview": "PREVIEW",
+                    "body": "BODY",
+                    "created_by": 1,
+                },
+            )
+
             retrieved_articles = await repo.retrieve_all_articles(created_by=2)
 
             assert retrieved_articles == []
-            assert repo.seen == {article_1}
+            assert repo.seen == {article}
 
     async def test_cannot_retrieve_all_articles_of_user_from_disconnected_database(
         self,
         sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
     ) -> None:
-        article_1 = Article("First Title", "First Preview", "First Body", created_by=1)
-        article_2 = Article("Second Title", "Second Preview", "Second Body", created_by=2)
-        article_3 = Article("Third Title", "Third Preview", "Third Body", created_by=1)
         async with sqlite_session_factory() as session:
-            repo = SqlAlchemyArticleRepository(session)
-            repo.create_article(article_1)
-            repo.create_article(article_2)
-            repo.create_article(article_3)
+            repo, articles = ServiceClass.create_repository_with_one_article(
+                session,
+                {
+                    "title": "FIRST TITLE",
+                    "preview": "FIRST PREVIEW",
+                    "body": "FIRST BODY",
+                    "created_by": 1,
+                },
+                {
+                    "title": "SECOND TITLE",
+                    "preview": "SECOND PREVIEW",
+                    "body": "SECOND BODY",
+                    "created_by": 2,
+                },
+                {
+                    "title": "THIRD TITLE",
+                    "preview": "THIRD PREVIEW",
+                    "body": "THIRD BODY",
+                    "created_by": 1,
+                },
+            )
 
             await session.bind.dispose()
+
             with pytest.raises(exceptions.DatabaseConnectionError):  # noqa: PT012
                 retrieved_articles = await repo.retrieve_all_articles(created_by=1)
                 assert not retrieved_articles
 
-            assert repo.seen == {article_1, article_2, article_3}
+            assert repo.seen == set(articles)  # type: ignore[arg-type]

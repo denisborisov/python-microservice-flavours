@@ -5,9 +5,9 @@ import uuid
 
 import sqlalchemy.ext.asyncio
 
+from .conftest import ServiceClass
 from src.adapters.articles_repository import SqlAlchemyArticleRepository
 from src.domain.exceptions import ArticleModificationError
-from src.domain.model import Article
 
 
 class TestModifyArticle:
@@ -16,23 +16,23 @@ class TestModifyArticle:
         [
             (
                 {},
-                {"title": "Title", "preview": "Preview", "body": "Body"},
+                {"title": "TITLE", "preview": "PREVIEW", "body": "BODY"},
             ),
             (
-                {"title": "Another Title"},
-                {"title": "Another Title", "preview": "Preview", "body": "Body"},
+                {"title": "ANOTHER TITLE"},
+                {"title": "ANOTHER TITLE", "preview": "PREVIEW", "body": "BODY"},
             ),
             (
-                {"preview": "Another Preview"},
-                {"title": "Title", "preview": "Another Preview", "body": "Body"},
+                {"preview": "ANOTHER PREVIEW"},
+                {"title": "TITLE", "preview": "ANOTHER PREVIEW", "body": "BODY"},
             ),
             (
-                {"body": "Another Body"},
-                {"title": "Title", "preview": "Preview", "body": "Another Body"},
+                {"body": "ANOTHER BODY"},
+                {"title": "TITLE", "preview": "PREVIEW", "body": "ANOTHER BODY"},
             ),
             (
-                {"title": "Another Title", "preview": "Another Preview", "body": "Another Body"},
-                {"title": "Another Title", "preview": "Another Preview", "body": "Another Body"},
+                {"title": "ANOTHER TITLE", "preview": "ANOTHER PREVIEW", "body": "ANOTHER BODY"},
+                {"title": "ANOTHER TITLE", "preview": "ANOTHER PREVIEW", "body": "ANOTHER BODY"},
             ),
         ],
     )
@@ -42,25 +42,32 @@ class TestModifyArticle:
         result: dict,
         sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
     ) -> None:
-        article = Article("Title", "Preview", "Body", created_by=1)
         async with sqlite_session_factory() as session:
-            repo = SqlAlchemyArticleRepository(session)
-            repo.create_article(article)
-
-            patch_data["article_id"] = article.article_id
-            await repo.update_article(
-                article_id=patch_data["article_id"],
-                title=patch_data.get("title"),
-                preview=patch_data.get("preview"),
-                body=patch_data.get("body"),
+            repo, article = ServiceClass.create_repository_with_one_article(
+                session,
+                {
+                    "title": "TITLE",
+                    "preview": "PREVIEW",
+                    "body": "BODY",
+                    "created_by": 1,
+                },
             )
-            retrieved_article = await repo.retrieve_article_by_id(article.article_id)
+
+            retrieved_article = await ServiceClass.update_and_retrieve_article(
+                repo,
+                {
+                    "article_id": article.article_id,  # type: ignore[union-attr]
+                    "title": patch_data.get("title"),
+                    "preview": patch_data.get("preview"),
+                    "body": patch_data.get("body"),
+                },
+            )
 
             assert retrieved_article
             assert retrieved_article.title == result["title"]
             assert retrieved_article.preview == result["preview"]
             assert retrieved_article.body == result["body"]
-            assert retrieved_article.created_by == article.created_by
+            assert retrieved_article.created_by == article.created_by  # type: ignore[union-attr]
 
     async def test_raises_exception_if_not_found(
         self,
@@ -69,12 +76,14 @@ class TestModifyArticle:
         async with sqlite_session_factory() as session:
             repo = SqlAlchemyArticleRepository(session)
             article_id = uuid.uuid4()
-            patch_data: dict = {"article_id": article_id, "title": "Another Title"}
+
             with pytest.raises(ArticleModificationError) as exc_info:
-                await repo.update_article(
-                    article_id=patch_data["article_id"],
-                    title=patch_data.get("title"),
-                    preview=patch_data.get("preview"),
-                    body=patch_data.get("body"),
+                await ServiceClass.update_and_retrieve_article(
+                    repo,
+                    {
+                        "article_id": article_id,
+                        "title": "ANOTHER TITLE",
+                    },
                 )
+
             assert exc_info.value.args[0] == f"Article with {article_id=} has not been found."
