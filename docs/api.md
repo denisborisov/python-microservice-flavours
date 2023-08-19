@@ -15,12 +15,7 @@
       <td align="center">1</td>
       <td align="center">GTWMS</td>
       <td>[C] create an article</td>
-      <td align="center">
-        <ul>
-          <li>user id</li>
-          <li>article data</li>
-        </ul>
-      </td>
+      <td align="center">article data</td>
       <td></td>
     </tr>
     <tr>
@@ -36,7 +31,6 @@
       <td>[U] update an article</td>
       <td align="center">
         <ul>
-          <li>user id</li>
           <li>article id</li>
           <li>article data</li>
         </ul>
@@ -47,12 +41,7 @@
       <td align="center">4</td>
       <td align="center">GTWMS</td>
       <td>[D] delete an article</td>
-      <td align="center">
-        <ul>
-          <li>user id</li>
-          <li>article id</li>
-        </ul>
-      </td>
+      <td align="center">article id</td>
       <td></td>
     </tr>
     <tr>
