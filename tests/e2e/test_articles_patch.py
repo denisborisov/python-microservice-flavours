@@ -1,99 +1,97 @@
 """E2E tests related to PATCH articles API."""
 
 import http
+import pytest
 import uuid
 
 from httpx import AsyncClient
 
+from .conftest import ServiceClass
+
 
 class TestModifyArticle:
     async def test_happy_path_returns_200(self, async_client: AsyncClient) -> None:
-        article = {"title": "Title", "preview": "Preview", "body": "Body", "created_by": 1}
-        response = await async_client.post("/api/articles", json=article)
-
-        article_modification = {
-            "title": "Another Title",
-            "preview": "Another Preview",
-            "body": "Another Body",
-        }
-
-        response = await async_client.patch(
-            f"/api/articles/{response.json()['article_id']}",
-            json=article_modification,
+        json_create_responses = await ServiceClass.create_articles(
+            async_client,
+            {
+                "title": "TITLE",
+                "preview": "PREVIEW",
+                "body": "BODY",
+                "created_by": 1,
+            },
         )
 
-        assert response.status_code == http.HTTPStatus.OK
+        update_response = await ServiceClass.update_article(
+            async_client,
+            {
+                "article_id": json_create_responses[0]["article_id"],
+                "title": "ANOTHER TITLE",
+                "preview": "ANOTHER PREVIEW",
+                "body": "ANOTHER BODY",
+            },
+        )
+
+        assert update_response.status_code == http.HTTPStatus.OK
 
     async def test_cannot_modify_nonexistent_article (
         self,
         async_client: AsyncClient,
     ) -> None:
-        article = {"title": "Title", "preview": "Preview", "body": "Body", "created_by": 1}
-        response = await async_client.post("/api/articles", json=article)
-
-        article_modification = {
-            "title": "Another Title",
-            "preview": "Another Preview",
-            "body": "Another Body",
-        }
+        await ServiceClass.create_articles(
+            async_client,
+            {
+                "title": "TITLE",
+                "preview": "PREVIEW",
+                "body": "BODY",
+                "created_by": 1,
+            },
+        )
 
         article_id = uuid.uuid4()
-        response = await async_client.patch(
-            f"/api/articles/{article_id}",
-            json=article_modification,
+        update_response = await ServiceClass.update_article(
+            async_client,
+            {
+                "article_id": str(article_id),
+                "title": "ANOTHER TITLE",
+                "preview": "ANOTHER PREVIEW",
+                "body": "ANOTHER BODY",
+            },
         )
 
-        assert response.status_code == http.HTTPStatus.NOT_FOUND
-        assert response.json()["detail"] == \
+        assert update_response.status_code == http.HTTPStatus.NOT_FOUND
+        assert update_response.json()["detail"] == \
             f"Article with {article_id=} has not been found."
 
-    async def test_cannot_modify_article_with_empty_title(
+    @pytest.mark.parametrize(
+        ("field"),
+        [
+            ("title"),
+            ("preview"),
+            ("body"),
+        ],
+    )
+    async def test_cannot_modify_article_with_empty_fields(
         self,
+        field: str,
         async_client: AsyncClient,
     ) -> None:
-        article = {"title": "Title", "preview": "Preview", "body": "Body", "created_by": 1}
-        response = await async_client.post("/api/articles", json=article)
-
-        article_modification = {"title": " "}
-
-        response = await async_client.patch(
-            f"/api/articles/{response.json()['article_id']}",
-            json=article_modification,
+        json_create_responses = await ServiceClass.create_articles(
+            async_client,
+            {
+                "title": "TITLE",
+                "preview": "PREVIEW",
+                "body": "BODY",
+                "created_by": 1,
+            },
         )
 
-        assert response.status_code == http.HTTPStatus.BAD_REQUEST
-        assert response.json()["detail"].startswith("Failed to update article.")
-
-    async def test_cannot_modify_article_with_empty_preview(
-        self,
-        async_client: AsyncClient,
-    ) -> None:
-        article = {"title": "Title", "preview": "Preview", "body": "Body", "created_by": 1}
-        response = await async_client.post("/api/articles", json=article)
-
-        article_modification = {"preview": " "}
-
-        response = await async_client.patch(
-            f"/api/articles/{response.json()['article_id']}",
-            json=article_modification,
+        update_response = await ServiceClass.update_article(
+            async_client,
+            {
+                "article_id": json_create_responses[0]["article_id"],
+                field: " ",
+            },
         )
 
-        assert response.status_code == http.HTTPStatus.BAD_REQUEST
-        assert response.json()["detail"].startswith("Failed to update article.")
-
-    async def test_cannot_modify_article_with_empty_body(
-        self,
-        async_client: AsyncClient,
-    ) -> None:
-        article = {"title": "Title", "preview": "Preview", "body": "Body", "created_by": 1}
-        response = await async_client.post("/api/articles", json=article)
-
-        article_modification = {"body": " "}
-
-        response = await async_client.patch(
-            f"/api/articles/{response.json()['article_id']}",
-            json=article_modification,
-        )
-
-        assert response.status_code == http.HTTPStatus.BAD_REQUEST
-        assert response.json()["detail"].startswith("Failed to update article.")
+        assert update_response.status_code == http.HTTPStatus.BAD_REQUEST
+        assert update_response.json()["detail"].startswith("Failed to update article.")

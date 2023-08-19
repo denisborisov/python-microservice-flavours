@@ -12,6 +12,7 @@ class TestHttpClient:
     async def test_happy_path_returns_200(self, httpx_client: AbstractHttpClient) -> None:
         async with httpx_client:
             response: httpx.Response = await httpx_client.get("http://example.com")
+
             assert response.text
             assert response.status_code == http.HTTPStatus.OK
 

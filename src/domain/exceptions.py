@@ -18,3 +18,7 @@ class CommandHandlingError(Exception):
 
 class DatabaseConnectionError(Exception):
     pass
+
+
+class NetworkConnectionError(Exception):
+    pass

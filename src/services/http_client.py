@@ -6,6 +6,8 @@ import typing_extensions
 
 import httpx
 
+from ..domain.exceptions import NetworkConnectionError
+
 
 class AbstractHttpClient(typing.Protocol):
     async def __aenter__(self) -> typing_extensions.Self:
@@ -51,6 +53,9 @@ class HttpxClient(AbstractHttpClient):
         return response
 
     async def get(self, url: str) -> httpx.Response:
-        response = await self.client.get(url)
+        try:
+            response = await self.client.get(url)
+        except httpx.ConnectError as ex:
+            raise NetworkConnectionError from ex
         response.raise_for_status()
         return response

@@ -10,6 +10,7 @@ from httpx import AsyncClient
 class TestCreateArticle:
     async def test_happy_path_returns_201(self, async_client: AsyncClient) -> None:
         article = {"title": "Title", "preview": "Preview", "body": "Body", "created_by": 1}
+
         response = await async_client.post("/api/articles", json=article)
 
         assert response.status_code == http.HTTPStatus.CREATED
@@ -31,6 +32,7 @@ class TestCreateArticle:
         created_by: int,
     ) -> None:
         article = {"title": title, "preview": preview, "body": body, "created_by": created_by}
+
         response = await async_client.post("/api/articles", json=article)
 
         assert response.status_code == http.HTTPStatus.BAD_REQUEST
@@ -52,6 +54,7 @@ class TestCreateArticle:
         created_by: int,
     ) -> None:
         article = {"title": title, "preview": preview, "body": body, "created_by": created_by}
+
         response = await async_client.post("/api/articles", json=article)
 
         assert response.status_code == http.HTTPStatus.BAD_REQUEST
@@ -73,6 +76,7 @@ class TestCreateArticle:
         created_by: int,
     ) -> None:
         article = {"title": title, "preview": preview, "body": body, "created_by": created_by}
+
         response = await async_client.post("/api/articles", json=article)
 
         assert response.status_code == http.HTTPStatus.BAD_REQUEST

@@ -2,9 +2,10 @@
 
 import pytest
 import typing
+import uuid
 
 from asgi_lifespan import LifespanManager
-from httpx import AsyncClient
+import httpx
 import sqlalchemy.ext.asyncio
 
 from src.main import app
@@ -47,5 +48,40 @@ async def async_client(
         getattr(app, "unit_of_work_container").sql_alchemy_unit_of_work.override(sqlite_uow),
         getattr(app, "message_bus_container").message_bus.override(sqlite_bus),
     ):
-        async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
+        async with httpx.AsyncClient(
+            app=app,
+            base_url="http://test",
+        ) as client, LifespanManager(app):
             yield client
+
+
+class ServiceClass:
+    @staticmethod
+    async def create_articles(
+        async_client: httpx.AsyncClient,
+        *article_data: dict,
+    ) -> list[typing.Any]:
+        json_responses: list[dict] = []
+        for article in article_data:
+            response = await async_client.post("/api/articles", json=article)
+            json_responses.append(response.json())
+        return json_responses
+
+    @staticmethod
+    async def update_article(
+        async_client: httpx.AsyncClient,
+        article_data: dict,
+    ) -> httpx.Response:
+        return await async_client.patch(
+            f"/api/articles/{article_data['article_id']}",
+            json=article_data,
+        )
+
+    @staticmethod
+    async def delete_article_and_fetch_all(
+        async_client: httpx.AsyncClient,
+        article_id: str | uuid.UUID,
+    ) -> tuple[httpx.Response, httpx.Response]:
+        delete_response = await async_client.delete(f"/api/articles/{article_id}")
+        fetchall_response = await async_client.get("/api/articles")
+        return delete_response, fetchall_response
