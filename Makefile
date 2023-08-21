@@ -12,7 +12,7 @@ lint-all: lint-yaml
 test-app: lint-all
     # Run tests related to app
 	poetry run pytest --cov-fail-under=${PYTEST_COVER_PERCENT} \
-	                  tests/
+                      tests/
 
 up-db:
     # Run a PostgreSQL container
@@ -37,7 +37,21 @@ up: up-alembic
 down:
     # Remove a PostgreSQL container
 	podman-compose down --remove-orphans \
-	                    --volumes
+                        --volumes
+
+build-app-image:
+    # Build an image with app
+	podman build --tag app-image \
+                 --target app-image \
+                 .
+
+run-app-image:
+    # Run a container with app
+	chmod -R 777 ./reports
+	podman run --env POSTGRES_DSN="${POSTGRES_DSN}" \
+               --volume ./reports:/home/artms-controller/reports \
+			   --publish 8000:8000 \
+               app-image
 
 cleanup:
 	podman rm $(podman ps -aq)

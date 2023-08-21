@@ -1,0 +1,9 @@
+# Ignore everything
+**
+
+# Except for dependencies and source
+!/Dockerfile
+!/kaniko
+!/poetry.lock
+!/pyproject.toml
+!/src

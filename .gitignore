@@ -2,6 +2,7 @@
 .mypy_cache
 .pytest_cache
 .venv
+kaniko
 reports
 
 # files
