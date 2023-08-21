@@ -1,9 +1,14 @@
 # Ignore everything
 **
 
-# Except for dependencies and source
-!/Dockerfile
+# Except for directories
+!/alembic
 !/kaniko
+!/src
+
+# Except for files
+!/alembic.ini
+!/Dockerfile
+!/migration.Dockerfile
 !/poetry.lock
 !/pyproject.toml
-!/src

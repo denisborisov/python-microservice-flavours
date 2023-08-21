@@ -4,31 +4,33 @@
 # - deps-image
 # - app-image
 # 
-# The purpose of the app-image stage is to create the final image containing our app.
-# This stage is the one that should be built by kaniko on the build-app-image step,
-# and it is defined in .gitlab-ci.yml file via --target app-image flag.
+# The purpose of the `app-migration-image` stage is to create the final image containing our app.
+# This stage is the one that should be built by kaniko on the `build-app-migration-image` step,
+# and it is defined in `.gitlab-ci.yml` file via `--target app-migration-image` flag.
 # 
-# Both deps-image-gitlab and deps-image-local stages are destined to load and install all necessary dependencies -
-# poetry dependencies in our case. We read Artifactory credentials from kaniko/creds file.
+# Both `deps-image-gitlab` and `deps-image-local` stages are destined to load and install all necessary dependencies -
+# poetry dependencies in our case. We read Artifactory credentials from `kaniko/creds` file.
 # This file has the following structure:
 # 
 # username
 # password
 # 
-# And the main difference between deps-image-gitlab and deps-image-local is in the location of this file.
-# If we want to run this Dockerfile locally, we should create this kaniko/creds file, placing kaniko folder
+# And the main difference between `deps-image-gitlab` and `deps-image-local` is in the location of this file.
+# If we want to run this Dockerfile locally, we should create this `kaniko/creds` file, placing `kaniko` folder
 # at the same level as this Dockerfile.
 # 
-# The purpose of the deps-image stage as long as the BUILD_ENVIRONMENT argument variable
-# is to switch between deps-image-gitlab and deps-image-local stages while running the app-image stage,
-# particularly the COPY --from instruction.
+# The purpose of the `deps-image` stage as long as the `BUILD_ENVIRONMENT` argument variable
+# is to switch between `deps-image-gitlab` and `deps-image-local` stages while running the `app-migration-image` stage,
+# particularly the `COPY --from` instruction.
 # 
-# So in order to run this Docker file locally, we should change the BUILD_ENVIRONMENT argument variable to "local".
-# You can also see that this argument variable is set to 'gitlab' on the build-app-image step
-# in .gitlab-ci.yml: --build-arg BUILD_ENVIRONMENT=gitlab, because there we want to use deps-image-gitlab
-# inside the COPY --from instruction of the app-image stage.
+# So in order to run this Docker file locally, we should change the `BUILD_ENVIRONMENT` argument variable to "local".
+# You can also see that this argument variable is set to 'gitlab' on the `build-app-migration-image` step
+# in `.gitlab-ci.yml`: `--build-arg BUILD_ENVIRONMENT=gitlab`, because there we want to use `deps-image-gitlab`
+# inside the `COPY --from` instruction of the `app-migration-image` stage.
 # 
 ARG BUILD_ENVIRONMENT="local"
+ARG REVISION=
+ARG ROLLBACK_REVISION=
 
 # 
 # Base image.
@@ -82,14 +84,17 @@ RUN --mount=type=secret,id=creds \
 
 # 
 # A switch between previous gitlab- and local- stages.
-# Will be used in the `COPY --from` instriction of the app-image stage.
+# Will be used in the `COPY --from` instriction of the `app-migration-image` stage.
 # 
 FROM deps-image-${BUILD_ENVIRONMENT} as deps-image
 
 # 
 # An image containing our app.
 # 
-FROM runtime-image as app-image
+FROM runtime-image as app-migration-image
+
+ARG REVISION
+ARG ROLLBACK_REVISION
 
 ENV VENV_PATH="./.venv"
 ENV HOME_PATH="/home/artms-controller"
@@ -98,8 +103,8 @@ ENV POSTGRES_DSN=""
 
 WORKDIR ${HOME_PATH}
 
-COPY ["src", "./src"]
-COPY ["Dockerfile", "./"]
+COPY ["alembic", "./alembic"]
+COPY ["alembic.ini", "migration.Dockerfile", "./"]
 COPY --from=deps-image ["poetry.lock", "pyproject.toml", "./"]
 COPY --from=deps-image ["${VENV_PATH}", "${VENV_PATH}"]
 
@@ -108,6 +113,10 @@ RUN groupadd -g 1000 artms-controller \
     -d ${HOME_PATH} -m -s /bin/bash artms-controller \
     && chown -R artms-controller:artms-controller ./
 
+RUN echo "python -m alembic upgrade ${REVISION}" > upgrade.sh \
+    && echo "python -m alembic downgrade ${ROLLBACK_REVISION}" > rollback.sh \
+    && chmod +x upgrade.sh && chmod +x rollback.sh
+
 USER artms-controller
 
-ENTRYPOINT ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+ENTRYPOINT ["/bin/bash"]

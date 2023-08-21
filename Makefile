@@ -39,18 +39,38 @@ down:
 	podman-compose down --remove-orphans \
                         --volumes
 
+build-app-migration-image:
+    # Build an image with Alembic migrations
+	podman build --file migration.Dockerfile \
+                 --build-arg REVISION=head \
+                 --build-arg ROLLBACK_REVISION=base \
+                 --skip-unused-stages \
+                 --tag app-migration-image \
+                 --target app-migration-image \
+                 .
+
 build-app-image:
     # Build an image with app
-	podman build --tag app-image \
+	podman build --skip-unused-stages \
+                 --tag app-image \
                  --target app-image \
                  .
+
+build-all: build-app-migration-image build-app-image
+    # Build all images
+
+run-app-migration-image: up-db
+    # Run a container with Alembic migrations
+	podman run --env POSTGRES_DSN="${POSTGRES_DSN}" \
+               --network host \
+               app-migration-image \
+               upgrade.sh
 
 run-app-image:
     # Run a container with app
 	chmod -R 777 ./reports
 	podman run --env POSTGRES_DSN="${POSTGRES_DSN}" \
-               --volume ./reports:/home/artms-controller/reports \
-			   --publish 8000:8000 \
+               --publish 8000:8000 \
                app-image
 
 cleanup:
