@@ -3,12 +3,11 @@
 
 # Except for directories
 !/alembic
+!/docker
 !/kaniko
 !/src
 
 # Except for files
 !/alembic.ini
-!/Dockerfile
-!/migration.Dockerfile
 !/poetry.lock
 !/pyproject.toml

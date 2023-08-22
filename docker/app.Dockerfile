@@ -31,29 +31,6 @@
 ARG BUILD_ENVIRONMENT="local"
 
 # 
-# Base image.
-# 
-FROM python:3.11-slim as base-image
-
-RUN apt-get update --yes \
-    && apt-get upgrade --yes \
-    && pip install -U pip poetry \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean \
-    && apt-get autoremove \
-    && rm -rf ~/.cache
-
-FROM scratch AS runtime-image
-
-ENV PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
-    LANG=C.UTF-8 \
-    PYTHONUNBUFFERED=1
-
-WORKDIR $WORKDIR
-
-COPY --from=base-image / /
-
-# 
 # This stage is fit for GitLab CI.
 # 
 FROM runtime-image AS deps-image-gitlab
@@ -80,6 +57,8 @@ RUN --mount=type=secret,id=creds \
     && poetry config virtualenvs.in-project true \
     && poetry install --only main
 
+RUN ls -la
+
 # 
 # A switch between previous gitlab- and local- stages.
 # Will be used in the `COPY --from` instriction of the app-image stage.
@@ -99,7 +78,7 @@ ENV POSTGRES_DSN=""
 WORKDIR ${HOME_PATH}
 
 COPY ["src", "./src"]
-COPY ["Dockerfile", "./"]
+COPY ["docker/runtime.Dockerfile", "docker/app.Dockerfile", "./"]
 COPY --from=deps-image ["poetry.lock", "pyproject.toml", "./"]
 COPY --from=deps-image ["${VENV_PATH}", "${VENV_PATH}"]
 

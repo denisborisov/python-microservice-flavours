@@ -39,9 +39,15 @@ down:
 	podman-compose down --remove-orphans \
                         --volumes
 
-build-app-migration-image:
+build-runtime-image:
+    # Build runtime image.
+	podman build --file docker/runtime.Dockerfile \
+                 --tag runtime-image \
+                 .
+
+build-app-migration-image: build-runtime-image
     # Build an image with Alembic migrations
-	podman build --file migration.Dockerfile \
+	podman build --file docker/migration.Dockerfile \
                  --build-arg REVISION=head \
                  --build-arg ROLLBACK_REVISION=base \
                  --skip-unused-stages \
@@ -49,9 +55,10 @@ build-app-migration-image:
                  --target app-migration-image \
                  .
 
-build-app-image:
+build-app-image: build-runtime-image
     # Build an image with app
-	podman build --skip-unused-stages \
+	podman build --file docker/app.Dockerfile \
+                 --skip-unused-stages \
                  --tag app-image \
                  --target app-image \
                  .
@@ -73,6 +80,6 @@ run-app-image:
                --publish 8000:8000 \
                app-image
 
-cleanup:
+cleanup: down
 	podman rm $(podman ps -aq)
 	podman rmi $(podman image ls -q)
