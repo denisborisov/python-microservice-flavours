@@ -50,17 +50,13 @@ build-app-migration-image: build-runtime-image
 	podman build --file docker/migration.Dockerfile \
                  --build-arg REVISION=head \
                  --build-arg ROLLBACK_REVISION=base \
-                 --skip-unused-stages \
                  --tag app-migration-image \
-                 --target app-migration-image \
                  .
 
 build-app-image: build-runtime-image
     # Build an image with app
 	podman build --file docker/app.Dockerfile \
-                 --skip-unused-stages \
                  --tag app-image \
-                 --target app-image \
                  .
 
 build-all: build-app-migration-image build-app-image

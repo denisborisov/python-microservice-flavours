@@ -1,6 +1,3 @@
-# 
-# Base image.
-# 
 FROM python:3.11-slim as base-image
 
 RUN apt-get update --yes \
