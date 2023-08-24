@@ -9,13 +9,24 @@ ENV POSTGRES_DSN=""
 WORKDIR ${HOME_PATH}
 
 COPY ["src", "./src"]
-COPY ["docker/app.Dockerfile", "docker/runtime.Dockerfile", "poetry.lock", "pyproject.toml", "./"]
+COPY ["docker/app.Dockerfile", \
+      "docker/runtime.Dockerfile", \
+      "poetry.lock", \
+      "pyproject.toml", \
+      "./"]
 
 RUN poetry config virtualenvs.in-project true \
     && poetry install --only main \
-    && groupadd -g 1000 artms-controller \
-    && useradd -u 1000 -g artms-controller -d ${HOME_PATH} -m -s /bin/bash artms-controller \
-    && chown -R artms-controller:artms-controller ./
+    && groupadd --gid 1000 \
+                artms-controller \
+    && useradd --uid 1000 \
+               --gid artms-controller \
+               --home ${HOME_PATH} \
+               --shell /bin/bash \
+               artms-controller \
+    && chown --recursive \
+             artms-controller:artms-controller \
+             ./
 
 USER artms-controller
 
