@@ -8,15 +8,21 @@ from .containers.wiring import attach_containers_to_app
 
 
 app = fastapi.FastAPI(
-    docs_url="/api/docs",
-    redoc_url="/api/redoc",
     title="Articles Microservice",
-    description="This is an article microservice.",
+    summary="Provides with ability to manipulate articles.",
+    description="""
+    Articles Microservice is one of the **core** microservices.
+
+    It provides with ability to perform CRUD operations.
+    """,
     version="0.1.0",
     contact={
-        "name": "Denis Borisov",
         "email": "denis.borisov@hotmail.com",
+        "name": "Denis Borisov",
+        "url": "https://www.linkedin.com/in/borisovdenis/",
     },
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
 )
 
 attach_containers_to_app(app)
