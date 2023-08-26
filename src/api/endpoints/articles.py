@@ -46,7 +46,7 @@ async def fetch_article_by_id(
     bus: MessageBus = fastapi.Depends(
         dependency_injector.wiring.Provide[MessageBusContainer.message_bus],
     ),
-) -> domain.model.Article | JSONResponse:
+) -> JSONResponse:
     if result := await views.articles.fetch_article_by_id(article_id, bus.uow):
         return JSONResponse(content=jsonable_encoder(result))
     return JSONResponse(
@@ -62,7 +62,7 @@ async def fetch_all_articles(
     bus: MessageBus = fastapi.Depends(
         dependency_injector.wiring.Provide[MessageBusContainer.message_bus],
     ),
-) -> list[domain.model.Article] | JSONResponse:
+) -> JSONResponse:
     if result := await views.articles.fetch_all_articles(bus.uow, created_by):
         return JSONResponse(content=jsonable_encoder(result))
     return JSONResponse(content="There are no articles at all.",
