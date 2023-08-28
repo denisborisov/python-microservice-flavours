@@ -10,15 +10,14 @@ from .containers.wiring import attach_containers_to_app
 app = fastapi.FastAPI(
     title="Articles Microservice",
     summary="Provides with ability to manipulate articles.",
-    description="""
-    Articles Microservice is one of the **core** microservices.
-
-    It provides with ability to perform CRUD operations.
-    """,
+    description=(
+        "Articles Microservice is one of the **core** microservices.\n"
+        "It provides with ability to perform CRUD operations."
+    ),
     version="0.1.0",
     contact={
-        "email": "denis.borisov@hotmail.com",
         "name": "Denis Borisov",
+        "email": "denis.borisov@hotmail.com",
         "url": "https://www.linkedin.com/in/borisovdenis/",
     },
     docs_url="/api/docs",

@@ -21,14 +21,14 @@ class TestArticlePost:
         assert article.created_by == 1
 
     def test_article_post_contains_valid_config(self) -> None:
-        config = schemata.ArticlePost.Config.json_schema_extra
+        example = schemata.ArticlePost.model_config["json_schema_extra"]["examples"][0]
 
-        assert config["example"]["title"] == "Заголовок статьи"
-        assert config["example"]["preview"] == (
+        assert example["title"] == "Заголовок статьи"
+        assert example["preview"] == (
             "Небольшое превью, размером с абзац-два, чтобы понять, о чём идёт речь в статье."
         )
-        assert config["example"]["body"] == "Содержимое статьи, сколь угодно большое"
-        assert config["example"]["created_by"] == 1
+        assert example["body"] == "Содержимое статьи, сколь угодно большое"
+        assert example["created_by"] == 1
 
 
 class TestArticle:
@@ -50,15 +50,15 @@ class TestArticle:
         assert article.created_by == 1
 
     def test_article_contains_valid_config(self) -> None:
-        config = schemata.Article.Config.json_schema_extra
+        example = schemata.Article.model_config["json_schema_extra"]["examples"][0]
 
-        assert isinstance(config["example"]["article_id"], uuid.UUID)
-        assert config["example"]["title"] == "Заголовок статьи"
-        assert config["example"]["preview"] == (
+        assert isinstance(example["article_id"], uuid.UUID)
+        assert example["title"] == "Заголовок статьи"
+        assert example["preview"] == (
             "Небольшое превью, размером с абзац-два, чтобы понять, о чём идёт речь в статье."
         )
-        assert config["example"]["body"] == "Содержимое статьи, сколь угодно большое"
-        assert config["example"]["created_by"] == 1
+        assert example["body"] == "Содержимое статьи, сколь угодно большое"
+        assert example["created_by"] == 1
 
 class TestArticlePatch:
     @pytest.mark.parametrize(
@@ -85,10 +85,10 @@ class TestArticlePatch:
         assert article.body == patch_data.get("body")
 
     def test_article_post_contains_valid_config(self) -> None:
-        config = schemata.ArticlePost.Config.json_schema_extra
+        example = schemata.ArticlePost.model_config["json_schema_extra"]["examples"][0]
 
-        assert config["example"]["title"] == "Заголовок статьи"
-        assert config["example"]["preview"] == (
+        assert example["title"] == "Заголовок статьи"
+        assert example["preview"] == (
             "Небольшое превью, размером с абзац-два, чтобы понять, о чём идёт речь в статье."
         )
-        assert config["example"]["body"] == "Содержимое статьи, сколь угодно большое"
+        assert example["body"] == "Содержимое статьи, сколь угодно большое"
