@@ -132,8 +132,8 @@ def fake_uow() -> FakeUnitOfWork:
 @pytest.fixture()
 def fake_bus(fake_uow: AbstractUnitOfWork) -> MessageBus:
     bus = MessageBus(uow=fake_uow)
-    bus._command_handlers = command_handlers  # noqa: SLF001
-    bus._event_handlers = event_handlers  # noqa: SLF001
+    bus._command_handlers = command_handlers  # type: ignore[assignment]  # noqa: SLF001
+    bus._event_handlers = event_handlers  # type: ignore[assignment]  # noqa: SLF001
     return bus
 
 

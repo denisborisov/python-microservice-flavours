@@ -45,7 +45,7 @@ COMMAND_HANDLERS: dict[
     type[domain.commands.Command],
     typing.Callable[[domain.commands.Command, AbstractUnitOfWork], typing.Any],
 ] = {
-    domain.commands.CreateArticle: create_article,
-    domain.commands.UpdateArticle: update_article,
-    domain.commands.DeleteArticle: delete_article,
+    domain.commands.CreateArticle: create_article,  # type: ignore[dict-item]
+    domain.commands.UpdateArticle: update_article,  # type: ignore[dict-item]
+    domain.commands.DeleteArticle: delete_article,  # type: ignore[dict-item]
 }
