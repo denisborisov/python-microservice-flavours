@@ -31,7 +31,7 @@ test-all: test-app test-alembic
     # Run tests related both to app and alembic migrations
 
 up: up-alembic
-    # Run app by first creating a database and runnign migrations
+    # Run app by first creating a database and running migrations
 	poetry run uvicorn src.main:app --reload
 
 down:
