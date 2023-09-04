@@ -18,7 +18,6 @@ from ..services.http_client import AbstractHttpClient
 
 class AbstractUnitOfWork(typing.Protocol):
     article_repository: adapters.articles_repository.AbstractArticleRepository
-    http_client: AbstractHttpClient
 
     async def __aenter__(self) -> typing_extensions.Self:
         return self

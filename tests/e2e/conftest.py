@@ -10,22 +10,14 @@ import sqlalchemy.ext.asyncio
 
 from src.main import app
 from src.services import unit_of_work
-from src.services.http_client import HttpxClient
 from src.services.message_bus import MessageBus
 
 
 @pytest.fixture()
-def httpx_client() -> HttpxClient:
-    return HttpxClient()
-
-
-@pytest.fixture()
 def sqlite_uow(
-    httpx_client: HttpxClient,
     sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
 ) -> unit_of_work.AbstractUnitOfWork:
     return unit_of_work.SqlAlchemyUnitOfWork(
-        http_client=httpx_client,
         session_factory=sqlite_session_factory,
     )
 

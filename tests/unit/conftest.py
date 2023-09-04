@@ -5,7 +5,6 @@ from dataclasses import dataclass
 import pytest
 import uuid
 
-from ..conftest import FakeHttpClient
 from src.adapters.articles_repository import AbstractArticleRepository
 from src.domain.commands import Command
 from src.domain.events import Event
@@ -44,7 +43,6 @@ class FakeArticleRepository(AbstractArticleRepository):
 class FakeUnitOfWork(AbstractUnitOfWork):
     def __init__(self) -> None:
         self.article_repository = FakeArticleRepository()
-        self.http_client = FakeHttpClient(self)
         self.committed = False
 
     async def _commit(self) -> None:
