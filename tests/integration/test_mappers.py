@@ -33,7 +33,7 @@ class TestMappers:
         sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
     ) -> None:
         async with sqlite_session_factory() as session:
-            repo, article = ServiceClass.create_repository_with_one_article(
+            repo, articles = ServiceClass.create_repository_with_articles(
                 session,
                 {
                     "title": "TITLE",
@@ -44,7 +44,7 @@ class TestMappers:
             )
 
             retrieved_article = await repo.retrieve_article_by_id(
-                article.article_id,  # type: ignore[union-attr]
+                articles[0].article_id,
             )
 
             assert getattr(retrieved_article, "events", None) is not None

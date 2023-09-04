@@ -19,10 +19,10 @@ def _use_mappers() -> typing.Generator:
 
 class ServiceClass:
     @staticmethod
-    def create_repository_with_one_article(
+    def create_repository_with_articles(
         session: sqlalchemy.ext.asyncio.AsyncSession,
         *article_data: dict,
-    ) -> tuple[SqlAlchemyArticleRepository, list[Article] | Article]:
+    ) -> tuple[SqlAlchemyArticleRepository, list[Article]]:
         repo = SqlAlchemyArticleRepository(session)
 
         articles: list[Article] = []
@@ -35,7 +35,7 @@ class ServiceClass:
             articles.append(article)
             repo.create_article(article)
 
-        return repo, articles[0] if len(articles) == 1 else articles
+        return repo, articles
 
     @staticmethod
     async def update_and_retrieve_article(

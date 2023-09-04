@@ -43,7 +43,7 @@ class TestModifyArticle:
         sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
     ) -> None:
         async with sqlite_session_factory() as session:
-            repo, article = ServiceClass.create_repository_with_one_article(
+            repo, articles = ServiceClass.create_repository_with_articles(
                 session,
                 {
                     "title": "TITLE",
@@ -56,7 +56,7 @@ class TestModifyArticle:
             retrieved_article = await ServiceClass.update_and_retrieve_article(
                 repo,
                 {
-                    "article_id": article.article_id,  # type: ignore[union-attr]
+                    "article_id": articles[0].article_id,  # type: ignore[union-attr]
                     "title": patch_data.get("title"),
                     "preview": patch_data.get("preview"),
                     "body": patch_data.get("body"),
@@ -67,7 +67,7 @@ class TestModifyArticle:
             assert retrieved_article.title == result["title"]
             assert retrieved_article.preview == result["preview"]
             assert retrieved_article.body == result["body"]
-            assert retrieved_article.created_by == article.created_by  # type: ignore[union-attr]
+            assert retrieved_article.created_by == articles[0].created_by
 
     async def test_raises_exception_if_not_found(
         self,

@@ -11,7 +11,7 @@ class TestCreateArticle:
         sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
     ) -> None:
         async with sqlite_session_factory() as session:
-            repo, article = ServiceClass.create_repository_with_one_article(
+            repo, articles = ServiceClass.create_repository_with_articles(
                 session,
                 {
                     "title": "TITLE",
@@ -21,5 +21,5 @@ class TestCreateArticle:
                 },
             )
 
-            assert article in repo.session.new
-            assert article in repo.seen
+            assert articles[0] in repo.session.new
+            assert articles[0] in repo.seen

@@ -16,7 +16,7 @@ class TestDeleteArticle:
         sqlite_session_factory: sqlalchemy.ext.asyncio.async_sessionmaker,
     ) -> None:
         async with sqlite_session_factory() as session:
-            repo, article = ServiceClass.create_repository_with_one_article(
+            repo, articles = ServiceClass.create_repository_with_articles(
                 session,
                 {
                     "title": "TITLE",
@@ -26,7 +26,7 @@ class TestDeleteArticle:
                 },
             )
 
-            await repo.delete_article(article.article_id)
+            await repo.delete_article(articles[0].article_id)
 
             assert not repo.seen
 
