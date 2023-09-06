@@ -40,17 +40,17 @@ version = "0.1.0"
 
 [tool.poetry.dependencies]
 
-alembic = "^1.10.3"
-dependency-injector = "^4.41.0"
-fastapi = "^0.100.0"
-fastapi-async-sqlalchemy = "^0.5.0"
-httpx = "^0.24.1"
-psycopg = {extras = ["binary"], version = "^3.1.10"}  # because asyncpg cannot resolve multihost connection strings
-pydantic = "^2.1.0"
-pydantic-settings = "^2.0.2"
+alembic = "*"
+dependency-injector = "*"
+fastapi = "*"
+fastapi-async-sqlalchemy = "*"
+httpx = "*"
+psycopg = {extras = ["binary"], version = "*"}  # because asyncpg cannot resolve multihost connection strings
+pydantic = "*"
+pydantic-settings = "*"
 python = "^3.11"
-sqlalchemy = { extras = ["asyncio"], version = "^2.0.11" }
-uvicorn = "^0.22.0"
+sqlalchemy = {extras = ["asyncio"], version = "*"}
+uvicorn = "*"
 
 # -------------------------------------------------------------------------------------------------
 
@@ -168,16 +168,8 @@ use_parentheses = true
 # Disallows defining functions without type annotations or with incomplete type annotations.
 disallow_untyped_defs = true
 
-# A regular expression that matches file names, directory names and paths
-# which mypy should ignore while recursively discovering files to check.
-exclude = ["alembic"]
-
 # Specifies the Python version used to parse and check the target program.
 python_version = "3.11"
-
-# Shows a warning when returning a value with type Any
-# from a function declared with a non-Any return type.
-warn_return_any = true
 
 # -------------------------------------------------------------------------------------------------
 

@@ -17,7 +17,7 @@ config = context.config
 config.set_section_option(
     section=config.config_ini_section,
     name="POSTGRES_DSN",
-    value=os.getenv("POSTGRES_DSN"),
+    value=os.getenv("POSTGRES_DSN", default=""),
 )
 
 # Interpret the config file for Python logging.

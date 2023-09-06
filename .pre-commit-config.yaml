@@ -4,13 +4,6 @@ repos:
     hooks:
       - id: check-hooks-apply
       - id: check-useless-excludes
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
-    hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: check-yaml
-      - id: check-added-large-files
   - repo: https://github.com/psf/black
     rev: '23.7.0'
     hooks:
@@ -35,11 +28,18 @@ repos:
     rev: '0.7.17'
     hooks:
       - id: mdformat
-  # - repo: https://github.com/pre-commit/mirrors-mypy
-  #   rev: ''
-  #   hooks:
-  #     - id: mypy
-  #       args: [--exclude=alembic, --ignore-missing-imports]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: 'v1.5.1'
+    hooks:
+      - id: mypy
+        additional_dependencies: [alembic]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-byte-order-marker
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: 'v0.0.287'
     hooks:
