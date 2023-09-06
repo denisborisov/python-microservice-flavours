@@ -1,9 +1,9 @@
 """E2E tests related to PATCH articles API."""
 
 import http
-import pytest
 import uuid
 
+import pytest
 from httpx import AsyncClient
 
 from .conftest import ServiceClass
@@ -33,7 +33,7 @@ class TestModifyArticle:
 
         assert update_response.status_code == http.HTTPStatus.OK
 
-    async def test_cannot_modify_nonexistent_article (
+    async def test_cannot_modify_nonexistent_article(
         self,
         async_client: AsyncClient,
     ) -> None:
@@ -59,8 +59,9 @@ class TestModifyArticle:
         )
 
         assert update_response.status_code == http.HTTPStatus.NOT_FOUND
-        assert update_response.json()["detail"] == \
-            f"Article with {article_id=} has not been found."
+        assert (
+            update_response.json()["detail"] == f"Article with {article_id=} has not been found."
+        )
 
     @pytest.mark.parametrize(
         ("field"),

@@ -3,6 +3,7 @@
 import typing
 import uuid
 
+
 if typing.TYPE_CHECKING:
     from . import events
 

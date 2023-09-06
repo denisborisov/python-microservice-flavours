@@ -2,9 +2,9 @@
 
 import types
 import typing
-import typing_extensions
 
 import httpx
+import typing_extensions
 
 from ..domain.exceptions import NetworkConnectionError
 

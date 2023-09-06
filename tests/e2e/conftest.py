@@ -1,12 +1,12 @@
 """Fixtures related to e2e tests."""
 
-import pytest
 import typing
 import uuid
 
-from asgi_lifespan import LifespanManager
 import httpx
+import pytest
 import sqlalchemy.ext.asyncio
+from asgi_lifespan import LifespanManager
 
 from src.main import app
 from src.services import unit_of_work

@@ -7,11 +7,11 @@ import fastapi
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
-from ... import domain
-from ... import views
+from ... import domain, views
 from ...containers.message_bus import MessageBusContainer
 from ...domain import exceptions
 from ...services.message_bus import MessageBus
+
 
 router = fastapi.APIRouter()
 
@@ -25,18 +25,22 @@ async def create_article(
     ),
 ) -> JSONResponse:
     try:
-        cmd = domain.commands.CreateArticle(article.title,
-                                            article.preview,
-                                            article.body,
-                                            article.created_by)
+        cmd = domain.commands.CreateArticle(
+            article.title,
+            article.preview,
+            article.body,
+            article.created_by,
+        )
     except exceptions.ArticleCreationError as ex:
         raise fastapi.HTTPException(
             detail="Failed to create article.",
             status_code=fastapi.status.HTTP_400_BAD_REQUEST,
         ) from ex
     result = await bus.handle(cmd)
-    return JSONResponse(content={"article_id": jsonable_encoder(result)},
-                        status_code=fastapi.status.HTTP_201_CREATED)
+    return JSONResponse(
+        content={"article_id": jsonable_encoder(result)},
+        status_code=fastapi.status.HTTP_201_CREATED,
+    )
 
 
 @router.get("/{article_id}", status_code=200, response_model=domain.schemata.Article)
@@ -65,8 +69,10 @@ async def fetch_all_articles(
 ) -> JSONResponse:
     if result := await views.articles.fetch_all_articles(bus.uow, created_by):
         return JSONResponse(content=jsonable_encoder(result))
-    return JSONResponse(content="There are no articles at all.",
-                        status_code=fastapi.status.HTTP_404_NOT_FOUND)
+    return JSONResponse(
+        content="There are no articles at all.",
+        status_code=fastapi.status.HTTP_404_NOT_FOUND,
+    )
 
 
 @router.patch("/{article_id}", status_code=200, response_model=None)

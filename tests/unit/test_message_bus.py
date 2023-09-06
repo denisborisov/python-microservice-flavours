@@ -1,18 +1,20 @@
 """Unit tests related to message bus."""
 
-import pytest
 import time
 
-from . import conftest
+import pytest
+
 from src import routines
 from src.domain.commands import Command
 from src.domain.exceptions import CommandHandlingError
 from src.services.message_bus import MessageBus
 
+from . import conftest
+
 
 class ServiceClass:
     class NonExistentCommand(Command):
-            pass
+        pass
 
     @staticmethod
     async def start_and_stop_processing_events(fake_bus: MessageBus) -> tuple[float, float]:
@@ -76,10 +78,10 @@ class TestEventsProcessingCycle:
         assert fake_bus._process_events_task.done()  # noqa: SLF001
 
     async def test_queued_events_are_finished_before_stop_processing_events(
-            self,
-            fake_bus: MessageBus,
-            capsys: pytest.CaptureFixture,
-        ) -> None:
+        self,
+        fake_bus: MessageBus,
+        capsys: pytest.CaptureFixture,
+    ) -> None:
         await fake_bus._event_queue.put(conftest.SleepEvent(1))  # noqa: SLF001
 
         await ServiceClass.start_and_stop_processing_events(fake_bus)

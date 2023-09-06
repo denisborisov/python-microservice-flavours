@@ -1,7 +1,8 @@
 """Integration tests related to session factory."""
 
-from src.services.session_factory import get_default_session_factory
 import sqlalchemy.ext.asyncio
+
+from src.services.session_factory import get_default_session_factory
 
 
 class TestSessionFactory:

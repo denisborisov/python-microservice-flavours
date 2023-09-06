@@ -30,7 +30,7 @@ name = "articles"
 # A path, or list of paths corresponding to the README file(s) of the package.
 readme = ["README.md", "docs/api.md"]
 
-# An URL to the repository of the project. 
+# An URL to the repository of the project.
 repository = "https://github.com/denisborisov/mvp-workshop/tree/main"
 
 # The version of the package.
@@ -61,6 +61,7 @@ docformatter = "*"
 isort = "*"
 mypy = "*"
 pre-commit = "*"
+pylint = "*"
 ruff = "*"
 
 # -------------------------------------------------------------------------------------------------
@@ -69,7 +70,6 @@ ruff = "*"
 
 aiosqlite = "*"
 asgi_lifespan = "*"
-pylint = "*"
 pytest = "*"
 pytest-cov = "*"
 pytest-xdist = "*"
@@ -170,7 +170,7 @@ disallow_untyped_defs = true
 
 # A regular expression that matches file names, directory names and paths
 # which mypy should ignore while recursively discovering files to check.
-exclude = "alembic"
+exclude = ["alembic"]
 
 # Specifies the Python version used to parse and check the target program.
 python_version = "3.11"
@@ -219,6 +219,9 @@ asyncio_mode = "auto"
 
 [tool.ruff]
 
+# A list of file patterns to omit from linting, in addition to those specified by `exclude`.
+extend-exclude = ["alembic"]
+
 # A list of rule codes or prefixes to ignore.
 ignore = [
   "ANN101", # Checks that instance method self arguments have type annotations.
@@ -231,6 +234,9 @@ ignore = [
   "D105",   # Checks for undocumented magic method definitions.
   "D106",   # Checks for undocumented public class definitions, for nested classes.
   "D107",   # Checks for public init method definitions that are missing docstrings.
+  "D211",   # Checks for docstrings on class definitions that are preceded by a blank line.
+  "D213",   # Checks for docstring summary lines that are not positioned
+            # on the second physical line of the docstring.
   "EM",     # Check stuff related to flake8.
   "FA102",  # Checks for uses of PEP 585- and PEP 604-style type annotations in Python modules that
             # lack the required `from __future__ import annotations` import for compatibility

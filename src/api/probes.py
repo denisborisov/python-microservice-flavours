@@ -19,5 +19,8 @@ def check_liveness() -> JSONResponse:
 
 @probes_router.get("/readiness", status_code=200, tags=["probes"], include_in_schema=False)
 def check_readiness() -> JSONResponse:
-    """Check if application is ready and connected to db. Select shoud be here."""
+    """Check if application is ready and connected to db.
+
+    Select shoud be here.
+    """
     return JSONResponse(content="OK", status_code=fastapi.status.HTTP_200_OK)

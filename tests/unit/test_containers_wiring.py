@@ -2,8 +2,7 @@
 
 from fastapi import FastAPI
 
-from src import routines
-from src import services
+from src import routines, services
 from src.api import endpoints
 from src.containers.wiring import attach_containers_to_app
 

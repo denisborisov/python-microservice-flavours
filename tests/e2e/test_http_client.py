@@ -1,9 +1,9 @@
 """Integration tests related to HTTP Client."""
 
 import http
-import pytest
 
 import httpx
+import pytest
 
 from src.services.http_client import HttpxClient
 
@@ -17,12 +17,12 @@ class TestHttpClient:
             assert response.status_code == http.HTTPStatus.OK
 
     @pytest.mark.parametrize(
-            "url",
-            [
-                ("http://www.example.com/lorem_ipsum"),
-                (None),
-            ],
-        )
+        "url",
+        [
+            ("http://www.example.com/lorem_ipsum"),
+            (None),
+        ],
+    )
     async def test_unhappy_path_raises_exception(
         self,
         url: str,

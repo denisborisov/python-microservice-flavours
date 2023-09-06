@@ -1,13 +1,14 @@
 """Integration tests related to article repository's READ operations."""
 
-import pytest
 import uuid
 
+import pytest
 import sqlalchemy.ext.asyncio
 
-from .conftest import ServiceClass
 from src.adapters.articles_repository import SqlAlchemyArticleRepository
 from src.domain import exceptions
+
+from .conftest import ServiceClass
 
 
 class TestRetrieveArticleById:

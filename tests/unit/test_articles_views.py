@@ -2,9 +2,9 @@
 
 import uuid
 
+from src import views
 from src.domain.model import Article
 from src.services.unit_of_work import AbstractUnitOfWork
-from src import views
 
 
 class ServiceClass:
@@ -16,8 +16,10 @@ class ServiceClass:
         articles: list[Article] = []
         for one_dict in article_data:
             article = Article(
-                one_dict["title"], one_dict["preview"],
-                one_dict["body"], one_dict["created_by"],
+                one_dict["title"],
+                one_dict["preview"],
+                one_dict["body"],
+                one_dict["created_by"],
             )
             articles.append(article)
             fake_uow.article_repository.create_article(article)
@@ -43,7 +45,8 @@ class TestFetchArticleByIdView:
         )
 
         fetched_article = await views.articles.fetch_article_by_id(
-            articles[0].article_id, uow=fake_uow,
+            articles[0].article_id,
+            uow=fake_uow,
         )
 
         assert fetched_article == articles[0]

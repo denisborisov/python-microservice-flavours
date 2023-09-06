@@ -1,7 +1,8 @@
 """Unit tests related to schemata."""
 
-import pytest
 import uuid
+
+import pytest
 
 from src.domain import schemata
 
@@ -59,6 +60,7 @@ class TestArticle:
         )
         assert example["body"] == "Содержимое статьи, сколь угодно большое"
         assert example["created_by"] == 1
+
 
 class TestArticlePatch:
     @pytest.mark.parametrize(

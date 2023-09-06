@@ -2,8 +2,7 @@
 
 import fastapi
 
-from . import api
-from . import routines
+from . import api, routines
 from .containers.wiring import attach_containers_to_app
 
 

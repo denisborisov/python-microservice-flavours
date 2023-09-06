@@ -1,14 +1,15 @@
 """Fixtures related to unit tests."""
 
 import asyncio
-from dataclasses import dataclass
-import pytest
 import uuid
+from dataclasses import dataclass
+
+import pytest
 
 from src.adapters.articles_repository import AbstractArticleRepository
+from src.domain import model
 from src.domain.commands import Command
 from src.domain.events import Event
-from src.domain import model
 from src.services.message_bus import MessageBus
 from src.services.unit_of_work import AbstractUnitOfWork
 
@@ -24,9 +25,7 @@ class FakeArticleRepository(AbstractArticleRepository):
 
     async def _retrieve_article_by_id(self, article_id: uuid.UUID) -> model.Article | None:
         if filtered_articles := [
-            one_article
-            for one_article in self.articles
-            if one_article.article_id == article_id
+            one_article for one_article in self.articles if one_article.article_id == article_id
         ]:
             return filtered_articles[0]
         return None
@@ -100,6 +99,7 @@ async def sleep_for(
 ) -> None:
     print(".", end="")  # noqa: T201
     await asyncio.sleep(event.seconds)
+
 
 event_handlers = {
     SayHello: [say_hello],

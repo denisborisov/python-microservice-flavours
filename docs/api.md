@@ -177,9 +177,10 @@
 #### 1.2. Response data of POST /api/articles
 
 Status Codes:
-  * 201 Created
-  * 400 Bad Request
-<br />
+
+- 201 Created
+- 400 Bad Request
+  <br />
 
 #### 2.1. Request data of GET /api/articles/{article_id}
 
@@ -207,9 +208,10 @@ Status Codes:
 #### 2.2. Response data of GET /api/articles/{article_id}
 
 Status Codes:
-  * 200 OK
-  * 404 Not Found
-<br />
+
+- 200 OK
+- 404 Not Found
+  <br />
 
 <table>
   <tbody>
@@ -315,9 +317,10 @@ Status Codes:
 #### 3.2. Response data of PATCH /api/articles/{article_id}
 
 Status Codes:
-  * 200 OK
-  * 404 Not Found
-<br />
+
+- 200 OK
+- 404 Not Found
+  <br />
 
 #### 4.1. Request data of DELETE /api/articles/{article_id}
 
@@ -345,9 +348,10 @@ Status Codes:
 #### 4.2. Response data of DELETE /api/articles/{article_id}
 
 Status Codes:
-  * 204 No Content
-  * 404 Not Found
-<br />
+
+- 204 No Content
+- 404 Not Found
+  <br />
 
 #### 5.1. Request data of GET /api/articles
 
@@ -375,9 +379,10 @@ Status Codes:
 #### 5.2. Response data of GET /api/articles
 
 Status Codes:
-  * 200 OK
-  * 404 Not Found
-<br />
+
+- 200 OK
+- 404 Not Found
+  <br />
 
 <table>
   <tbody>

@@ -1,9 +1,9 @@
 """E2E tests related to POST articles API."""
 
 import http
-import pytest
 import uuid
 
+import pytest
 from httpx import AsyncClient
 
 

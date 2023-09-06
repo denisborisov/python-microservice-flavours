@@ -1,7 +1,8 @@
 """Unit tests related to commands."""
 
-import pytest
 import uuid
+
+import pytest
 
 from src import domain
 

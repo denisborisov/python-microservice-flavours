@@ -1,8 +1,8 @@
 """General fixtures."""
 
-import pytest
 import typing
 
+import pytest
 import sqlalchemy.ext.asyncio
 
 from src.adapters.orm import Base

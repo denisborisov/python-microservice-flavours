@@ -1,11 +1,11 @@
 """Integration tests related to unit of work."""
 
 import contextlib
-import pytest
 import uuid
 
-from sqlalchemy import text
+import pytest
 import sqlalchemy.ext.asyncio
+from sqlalchemy import text
 
 from src.domain.exceptions import DatabaseConnectionError
 from src.services.unit_of_work import SqlAlchemyUnitOfWork

@@ -2,8 +2,7 @@
 
 from fastapi import FastAPI
 
-from .. import routines
-from .. import services
+from .. import routines, services
 from ..api import endpoints
 from .database_engine import DatabaseEngineContainer
 from .http_client import HttpClientContainer

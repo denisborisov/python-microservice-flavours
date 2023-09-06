@@ -1,8 +1,8 @@
 """Fixtures related to integration tests."""
 
-import pytest
 import typing
 
+import pytest
 import sqlalchemy.ext.asyncio
 
 from src.adapters.articles_repository import SqlAlchemyArticleRepository
@@ -29,8 +29,10 @@ class ServiceClass:
 
         for one_dict in article_data:
             article = Article(
-                one_dict["title"], one_dict["preview"],
-                one_dict["body"], one_dict["created_by"],
+                one_dict["title"],
+                one_dict["preview"],
+                one_dict["body"],
+                one_dict["created_by"],
             )
             articles.append(article)
             repo.create_article(article)
@@ -42,7 +44,6 @@ class ServiceClass:
         repo: SqlAlchemyArticleRepository,
         patch_data: dict,
     ) -> Article | None:
-
         await repo.update_article(
             article_id=patch_data["article_id"],
             title=patch_data.get("title"),

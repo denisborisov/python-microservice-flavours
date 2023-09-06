@@ -28,7 +28,6 @@ class MessageBus:
         self._event_handlers = handlers.event_handlers.EVENT_HANDLERS
         self._pending_handle_event_tasks: set[asyncio.Task] = set()
 
-
     def start_process_events(self) -> None:
         self._process_events_task = asyncio.create_task(self._process_events())
 
@@ -50,7 +49,6 @@ class MessageBus:
         self._process_events_task.cancel()
         with contextlib.suppress(asyncio.CancelledError):
             await self._process_events_task
-
 
     async def handle(self, command: Command) -> typing.Any:
         return await self._handle_command(command)

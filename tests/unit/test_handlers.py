@@ -1,13 +1,15 @@
 """Unit tests related to handlers."""
 
-import pytest
 import uuid
 
-from .conftest import FakeUnitOfWork
-from ..conftest import handle
+import pytest
+
 from src.domain import commands
 from src.domain.model import Article
 from src.services.message_bus import MessageBus
+
+from ..conftest import handle
+from .conftest import FakeUnitOfWork
 
 
 class ServiceClass:
@@ -18,8 +20,10 @@ class ServiceClass:
     ) -> list[uuid.UUID] | uuid.UUID:
         cmds = [
             commands.CreateArticle(
-                one_dict["title"], one_dict["preview"],
-                one_dict["body"], one_dict["created_by"],
+                one_dict["title"],
+                one_dict["preview"],
+                one_dict["body"],
+                one_dict["created_by"],
             )
             for one_dict in article_data
         ]
@@ -28,9 +32,9 @@ class ServiceClass:
 
     @staticmethod
     async def update_and_retrieve_article(
-            fake_uow: FakeUnitOfWork,
-            article_id: uuid.UUID,
-            patch_data: dict,
+        fake_uow: FakeUnitOfWork,
+        article_id: uuid.UUID,
+        patch_data: dict,
     ) -> Article | None:
         patch_data["article_id"] = article_id
         await handle(
@@ -41,8 +45,8 @@ class ServiceClass:
 
     @staticmethod
     async def delete_and_retrieve_article(
-            fake_uow: FakeUnitOfWork,
-            article_id: uuid.UUID,
+        fake_uow: FakeUnitOfWork,
+        article_id: uuid.UUID,
     ) -> Article | None:
         await handle(
             MessageBus(uow=fake_uow),
@@ -53,7 +57,7 @@ class ServiceClass:
 
 class TestArticleHandlers:
     async def test_can_create_article(self, fake_uow: FakeUnitOfWork) -> None:
-        article_id: uuid.UUID = \
+        article_id: uuid.UUID = (
             await ServiceClass.create_articles_in_repository(  # type: ignore[assignment]
                 fake_uow,
                 {
@@ -63,6 +67,7 @@ class TestArticleHandlers:
                     "created_by": 1,
                 },
             )
+        )
 
         articles = await fake_uow.article_repository.retrieve_all_articles()
 
@@ -104,7 +109,7 @@ class TestArticleHandlers:
         result: dict,
         fake_uow: FakeUnitOfWork,
     ) -> None:
-        article_id: uuid.UUID = \
+        article_id: uuid.UUID = (
             await ServiceClass.create_articles_in_repository(  # type: ignore[assignment]
                 fake_uow,
                 {
@@ -114,6 +119,7 @@ class TestArticleHandlers:
                     "created_by": 1,
                 },
             )
+        )
 
         article = await ServiceClass.update_and_retrieve_article(
             fake_uow,
@@ -130,22 +136,23 @@ class TestArticleHandlers:
         assert article.created_by == 1
 
     async def test_can_delete_article(self, fake_uow: FakeUnitOfWork) -> None:
-        article_ids: list[uuid.UUID] = \
-            await ServiceClass.create_articles_in_repository(  # type: ignore[assignment]
-                fake_uow,
-                {
-                    "title": "FIRST TITLE",
-                    "preview": "FIRST PREVIEW",
-                    "body": "FIRST BODY",
-                    "created_by": 1,
-                },
-                {
-                    "title": "SECOND TITLE",
-                    "preview": "SECOND PREVIEW",
-                    "body": "SECOND BODY",
-                    "created_by": 2,
-                },
-            )
+        article_ids: list[
+            uuid.UUID
+        ] = await ServiceClass.create_articles_in_repository(  # type: ignore[assignment]
+            fake_uow,
+            {
+                "title": "FIRST TITLE",
+                "preview": "FIRST PREVIEW",
+                "body": "FIRST BODY",
+                "created_by": 1,
+            },
+            {
+                "title": "SECOND TITLE",
+                "preview": "SECOND PREVIEW",
+                "body": "SECOND BODY",
+                "created_by": 2,
+            },
+        )
 
         await ServiceClass.delete_and_retrieve_article(fake_uow, article_ids[1])
 

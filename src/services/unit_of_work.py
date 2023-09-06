@@ -3,11 +3,11 @@
 import abc
 import types
 import typing
-import typing_extensions
 
 import dependency_injector.wiring
-from sqlalchemy.exc import OperationalError
 import sqlalchemy.ext.asyncio
+import typing_extensions
+from sqlalchemy.exc import OperationalError
 
 from .. import adapters
 from ..containers.http_client import HttpClientContainer
@@ -38,9 +38,9 @@ class AbstractUnitOfWork(typing.Protocol):
         await self._rollback()
 
     def collect_new_events(self) -> typing.Generator:
-        repositories: list[
-            adapters.articles_repository.AbstractArticleRepository
-        ] = [self.article_repository]
+        repositories: list[adapters.articles_repository.AbstractArticleRepository] = [
+            self.article_repository,
+        ]
 
         for one_repository in repositories:
             for entity in one_repository.seen:
@@ -63,8 +63,9 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
         http_client: AbstractHttpClient = dependency_injector.wiring.Provide[
             HttpClientContainer.http_client
         ],
-        session_factory: sqlalchemy.ext.asyncio.async_sessionmaker = \
-            dependency_injector.wiring.Provide[SessionFactoryContainer.session_factory],
+        session_factory: sqlalchemy.ext.asyncio.async_sessionmaker = (
+            dependency_injector.wiring.Provide[SessionFactoryContainer.session_factory]
+        ),
     ) -> None:
         self.http_client = http_client
         self._session_factory = session_factory

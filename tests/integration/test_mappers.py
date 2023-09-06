@@ -2,10 +2,11 @@
 
 import sqlalchemy.ext.asyncio
 
-from .conftest import ServiceClass
 from src.adapters import orm
 from src.domain import model
 from src.routines import mappers
+
+from .conftest import ServiceClass
 
 
 class TestMappers:

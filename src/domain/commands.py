@@ -1,8 +1,8 @@
 """Commands."""
 
-from dataclasses import dataclass
 import typing
 import uuid
+from dataclasses import dataclass
 
 from . import exceptions
 

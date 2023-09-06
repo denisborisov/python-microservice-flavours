@@ -49,8 +49,7 @@ class TestFetchArticleById:
         fetch_one_response = await async_client.get(f"/api/articles/{article_id}")
 
         assert fetch_one_response.status_code == http.HTTPStatus.NOT_FOUND
-        assert fetch_one_response.json() == \
-            f"Article with {article_id=} has not been found."
+        assert fetch_one_response.json() == f"Article with {article_id=} has not been found."
 
 
 class TestFetchAllArticles:
