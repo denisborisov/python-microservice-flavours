@@ -74,28 +74,28 @@ class SleepEvent(Event):
 
 async def say_hello(
     event: SayHello,
-    uow: AbstractUnitOfWork,  # noqa: ARG001
+    _: AbstractUnitOfWork,
 ) -> None:
     print(f"{event.message}")  # noqa: T201
 
 
 async def send_first_email(
     event: SendTwoEmails,
-    uow: AbstractUnitOfWork,  # noqa: ARG001
+    _: AbstractUnitOfWork,
 ) -> None:
     print(f"{event.message}")  # noqa: T201
 
 
 async def send_second_email(
     event: SendTwoEmails,
-    uow: AbstractUnitOfWork,  # noqa: ARG001
+    _: AbstractUnitOfWork,
 ) -> None:
     print(f"{event.message}")  # noqa: T201
 
 
 async def sleep_for(
     event: SleepEvent,
-    uow: AbstractUnitOfWork,  # noqa: ARG001
+    _: AbstractUnitOfWork,
 ) -> None:
     print(".", end="")  # noqa: T201
     await asyncio.sleep(event.seconds)

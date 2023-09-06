@@ -41,6 +41,10 @@ repos:
       - id: check-byte-order-marker
       - id: end-of-file-fixer
       - id: trailing-whitespace
+  - repo: https://github.com/PyCQA/pylint
+    rev: 'v3.0.0a7'
+    hooks:
+      - id: pylint
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: 'v0.0.287'
     hooks:

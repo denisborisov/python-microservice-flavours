@@ -62,12 +62,12 @@ class MessageBus:
             ) from KeyError
 
         result = await handler(command, self.uow)
-        for event in self.uow.collect_new_events():
-            await self._event_queue.put(event)
+        for one_event in self.uow.collect_new_events():
+            await self._event_queue.put(one_event)
         return result
 
     async def _handle_event(self, event: Event) -> None:
         for handler in self._event_handlers[type(event)]:
             await handler(event, self.uow)
-            for event in self.uow.collect_new_events():
-                await self._event_queue.put(event)
+            for one_event in self.uow.collect_new_events():
+                await self._event_queue.put(one_event)

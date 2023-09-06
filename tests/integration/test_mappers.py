@@ -25,7 +25,7 @@ class TestMappers:
 
         resulted_mappers = list(mappers.mapper_registry.mappers)
 
-        assert not len(resulted_mappers)
+        assert not resulted_mappers
 
         mappers.start_mappers()
 

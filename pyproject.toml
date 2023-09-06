@@ -173,18 +173,36 @@ python_version = "3.11"
 
 # -------------------------------------------------------------------------------------------------
 
-[tool.pylint]
-
-# A comma-separated list of package or module names from where C extensions may be loaded.
-extension-pkg-allow-list = ["pydantic", "asyncpg"]
+[tool.pylint.master]
 
 # Use multiple processes to speed up Pylint.
 # Specifying 0 will auto-detect the number of processors available to use,
 # and will cap the count on Windows to avoid hangs.
 jobs = 0
 
+# Blacklisted files or directories.
+ignore-paths = "alembic"
+
 # Maximum number of characters on a single line.
 max-line-length = 99
+
+# -------------------------------------------------------------------------------------------------
+
+[tool.pylint.messages_control]
+
+# A list of rule codes to ignore.
+disable = """
+    attribute-defined-outside-init,
+    duplicate-code,
+    import-error,
+    missing-class-docstring,
+    missing-function-docstring,
+    no-member,
+    protected-access,
+    redefined-outer-name,
+    too-few-public-methods,
+    too-many-arguments
+"""
 
 # -------------------------------------------------------------------------------------------------
 
