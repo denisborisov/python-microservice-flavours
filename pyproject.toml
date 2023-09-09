@@ -42,7 +42,7 @@ version = "0.1.0"
 
 alembic = "*"
 dependency-injector = "*"
-fastapi = "^0.100"
+fastapi = "^0.103"
 fastapi-async-sqlalchemy = "*"
 httpx = "*"
 psycopg = {extras = ["binary"], version = "*"}  # because asyncpg cannot resolve multihost connection strings
