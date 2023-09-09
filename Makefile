@@ -11,7 +11,7 @@ pre-commit:
 	poetry run pre-commit run --all-files
 
 .PHONY: test-app
-test-app: pre-commit
+test-app:
     # Run tests related to app
 	poetry run pytest --cov-fail-under=${PYTEST_COVER_PERCENT} \
                       tests/
@@ -33,7 +33,7 @@ test-alembic: up-alembic
 	poetry run alembic downgrade base
 
 .PHONY: test
-test: test-app test-alembic
+test: pre-commit test-app test-alembic
     # Run tests related both to app and alembic migrations
 
 .PHONY: up
