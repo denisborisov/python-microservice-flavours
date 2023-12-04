@@ -10,10 +10,8 @@ import typing_extensions
 from sqlalchemy.exc import OperationalError
 
 from .. import adapters
-from ..containers.http_client import HttpClientContainer
 from ..containers.session_factory import SessionFactoryContainer
 from ..domain.exceptions import DatabaseConnectionError
-from ..services.http_client import AbstractHttpClient
 
 
 class AbstractUnitOfWork(typing.Protocol):
@@ -60,14 +58,10 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
     @dependency_injector.wiring.inject
     def __init__(
         self,
-        http_client: AbstractHttpClient = dependency_injector.wiring.Provide[
-            HttpClientContainer.http_client
-        ],
         session_factory: sqlalchemy.ext.asyncio.async_sessionmaker = (
             dependency_injector.wiring.Provide[SessionFactoryContainer.session_factory]
         ),
     ) -> None:
-        self.http_client = http_client
         self._session_factory = session_factory
 
     async def __aenter__(self) -> typing_extensions.Self:

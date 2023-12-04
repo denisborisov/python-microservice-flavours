@@ -21,9 +21,8 @@ class TestDependencyInjection:
 
         containers = [attribute for attribute in app.__dict__ if attribute.endswith("_container")]
 
-        assert len(containers) == 5  # noqa: PLR2004
+        assert len(containers) == 4  # noqa: PLR2004
         assert getattr(app, "database_engine_container", None)
-        assert getattr(app, "http_client_container", None)
         assert getattr(app, "message_bus_container", None)
         assert getattr(app, "session_factory_container", None)
         assert getattr(app, "unit_of_work_container", None)
@@ -34,9 +33,6 @@ class TestDependencyInjection:
         assert getattr(app, "database_engine_container").wired_to_modules == [
             routines.database_engine,
             services.session_factory,
-        ]
-        assert getattr(app, "http_client_container").wired_to_modules == [
-            services.unit_of_work,
         ]
         assert getattr(app, "message_bus_container").wired_to_modules == [
             endpoints.articles,

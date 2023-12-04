@@ -5,7 +5,6 @@ from fastapi import FastAPI
 from .. import routines, services
 from ..api import endpoints
 from .database_engine import DatabaseEngineContainer
-from .http_client import HttpClientContainer
 from .message_bus import MessageBusContainer
 from .session_factory import SessionFactoryContainer
 from .unit_of_work import SqlAlchemyUnitOfWorkContainer
@@ -29,7 +28,3 @@ def attach_containers_to_app(app: FastAPI) -> None:
         modules=[endpoints.articles, routines.message_bus],
     )
     setattr(app, "message_bus_container", message_bus_container)
-
-    http_client_container = HttpClientContainer()
-    http_client_container.wire(modules=[services.unit_of_work])
-    setattr(app, "http_client_container", http_client_container)
