@@ -7,4 +7,5 @@ reports
 
 # files
 .coverage
+.DS_Store
 poetry.lock
