@@ -1,0 +1,12 @@
+# Ignore everything
+**
+
+# Except for directories
+!/alembic
+!/docker
+!/src
+
+# Except for files
+!/alembic.ini
+!/poetry.lock
+!/pyproject.toml

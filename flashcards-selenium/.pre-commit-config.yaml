@@ -1,0 +1,78 @@
+---
+repos:
+  # Meta
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+      - id: check-useless-excludes
+
+  # Black
+  - repo: https://github.com/psf/black
+    rev: '23.11.0'
+    hooks:
+      - id: black
+
+  # CheckMake
+  - repo: https://github.com/mrtazz/checkmake
+    rev: '0.2.2'
+    hooks:
+      - id: checkmake
+
+  # DocFormatter
+  - repo: https://github.com/PyCQA/docformatter
+    rev: 'v1.7.5'
+    hooks:
+      - id: docformatter
+
+  # HadoLint
+  - repo: https://github.com/hadolint/hadolint
+    rev: 'v2.12.1-beta'
+    hooks:
+      - id: hadolint
+        args: [--ignore, DL3006, --ignore, DL3013]
+
+  # iSort
+  - repo: https://github.com/PyCQA/isort
+    rev: '5.12.0'
+    hooks:
+      - id: isort
+
+  # MDFormat
+  - repo: https://github.com/executablebooks/mdformat
+    rev: '0.7.17'
+    hooks:
+      - id: mdformat
+
+  # MyPy
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: 'v1.7.1'
+    hooks:
+      - id: mypy
+        additional_dependencies: [alembic]
+
+  # Pre-Commit
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-byte-order-marker
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  # PyLint
+  - repo: https://github.com/PyCQA/pylint
+    rev: 'v3.0.1'
+    hooks:
+      - id: pylint
+
+  # Ruff
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: 'v0.1.6'
+    hooks:
+      - id: ruff
+
+  # YamlLint
+  - repo: https://github.com/adrienverge/yamllint
+    rev: 'v1.33.0'
+    hooks:
+      - id: yamllint
