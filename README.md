@@ -62,7 +62,6 @@ Use the following command to install `pre-commit`:
 ```shell
 make pre-commit
 ```
-<br />
 
 ## Project launching
 
