@@ -12,8 +12,6 @@ This microservice leverages Selenium with the Chrome web driver to parse the Goo
 
 - Break our `details` field in the database into separate fields if we need filtering/sorting by them. Then we will use `ARRAY` type fields and for running tests we will have to abandon SQLite and raise a separate container with a PostgreSQL database.
 - Separate the components of the `details` field into separate tables, then SQLite can be left.
-<br />
-<br />
 
 #### Related to app
 
@@ -21,15 +19,11 @@ This microservice leverages Selenium with the Chrome web driver to parse the Goo
 - Add logging
 - Use a newer version of Python 3.11
 - Parameterize additionally source and target languages (separately from the `GOOGLE_TRANSLATOR_URL` environment variable)
-<br />
-<br />
 
 #### Related to web scraping
 
 - Make more detailed error handling related to Selenium
 - Replace Selenium with an asynchronous framework, e.g. `arsenic`
-<br />
-<br />
 
 #### Related to deploy
 
