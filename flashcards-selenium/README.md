@@ -1,6 +1,10 @@
 # Flashcards Microservice
 
 Flashcards Microservice is a microservice that manages user foreign words and related dictionary entries taken from Google Translate.
+<br />
+<br />
+
+## Reflected specifics
 
 This microservice leverages Selenium with the Chrome web driver to parse the Google Translate page.
 <br />
