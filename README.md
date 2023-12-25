@@ -53,6 +53,8 @@ or this one to update them:
 ```shell
 poetry update
 ```
+<br />
+<br />
 
 #### Installing `pre-commit`
 
@@ -61,6 +63,8 @@ Use the following command to install `pre-commit`:
 ```shell
 make pre-commit
 ```
+<br />
+<br />
 
 ## Project launching
 
